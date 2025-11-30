@@ -1,31 +1,40 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import os
 
-app = FastAPI()
+from db import models
+from db.database import engine
+
+from api import bot_routes, chat_routes
+
+if not os.path.exists('./data'):
+    os.makedirs('./data')
+
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="BotBlocks Backend",
+    description="API for building, managing, and serving chatbots."
+)
 
 origins = [
     "http://localhost",
     "http://localhost:8501",
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"], 
-    allow_headers=["*"], 
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-@app.get("/")
-def read_root():
-    return {"Hello": "From FastAPI Backend"}
+app.include_router(bot_routes.router)
+app.include_router(chat_routes.router)
 
 @app.get("/api/v1/health")
 def get_health():
-    """
-    A simple health check endpoint.
-    """
     return {"status": "ok", "service": "backend"}
 
 if __name__ == "__main__":

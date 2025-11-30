@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 
 st.set_page_config(
-    page_title="Bot Builder 🤖",
+    page_title="Bot Builder",
     page_icon="🤖",
     layout="centered"
 )
@@ -29,7 +29,7 @@ if st.button("Test Connection"):
             st.error(f"Failed to connect. Status code: {response.status_code}")
 
     except requests.exceptions.ConnectionError:
-        st.error("Connection Failed! ❌")
+        st.error("Connection Failed!")
         st.warning(f"Could not connect to the backend at {BACKEND_API_URL}. Is it running?")
     except Exception as e:
         st.error(f"An unknown error occurred: {e}")
