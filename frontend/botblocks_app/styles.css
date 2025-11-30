@@ -1,6 +1,7 @@
 /* BotBlocks Custom Styles - Zinc/Yellow Technical Theme */
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 :root {
     /* Zinc Color Palette */
@@ -61,13 +62,16 @@ h4,
 h5,
 h6,
 p,
-span,
-div,
 button,
 input,
 textarea,
 label {
     font-family: var(--font-mono) !important;
+}
+
+/* Ensure Material Icons render correctly */
+span[data-testid="stIconMaterial"] {
+    font-family: 'Material Icons' !important;
 }
 
 h1,
