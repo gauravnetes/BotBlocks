@@ -23,7 +23,7 @@ def chat_with_bot(
         )
         
     try: 
-        ans = rag_pipeline.generate_respnose(
+        ans = rag_pipeline.generate_response(
             message=chat_request.message, 
             bot=bot
         )
