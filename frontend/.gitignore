@@ -1,6 +1,6 @@
 # --- Virtual Environments ---
 # Ignores all 'venv' folders, wherever they are
-**/venv/
+**/.venv/
 
 # --- Python Cache ---
 __pycache__/

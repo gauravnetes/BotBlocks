@@ -1,0 +1,10 @@
+[theme]
+base = "dark"
+primaryColor = "#FFD43B"           # energetic yellow (accent)
+backgroundColor = "#0f1724"        # zinc-900 like background
+secondaryBackgroundColor = "#111827" # zinc-800/900 surfaces
+textColor = "#e6eef6"              # light text
+font = "sans serif"
+
+[server]
+headless = true
