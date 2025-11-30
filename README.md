@@ -121,11 +121,11 @@ Pre-configured personality templates that automatically adjust:
 
 | Layer | Technology | Why? |
 |-------|-----------|------|
-| **Frontend** | Streamlit/Gradio | Rapid Python-based UI development |
+| **Frontend** | Streamlit | Rapid Python-based UI development |
 | **Backend** | FastAPI | High-performance async API |
 | **Vector DB** | ChromaDB | Zero-config, file-based storage |
 | **RAG Framework** | LangChain/LlamaIndex | Production-ready RAG pipeline |
-| **LLM** | Gemini/OpenAI API | State-of-the-art language models |
+| **LLM** | Gemini | State-of-the-art language models |
 | **Embeddings** | text-embedding-ada-002 | Semantic search capability |
 
 ## 📦 Installation
