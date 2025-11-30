@@ -59,10 +59,10 @@ def show_dashboard():
 
 def render_empty_state():
     st.markdown("""
-    <div style="text-align: center; padding: 60px 20px; background-color: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <div class="glass-panel" style="text-align: center; padding: 60px 20px;">
         <div style="font-size: 4rem; margin-bottom: 20px;">🤖</div>
-        <h2 style="color: #1e293b; margin-bottom: 10px;">No Bots Yet</h2>
-        <p style="color: #64748b; margin-bottom: 30px;">Create your first chatbot to get started!</p>
+        <h2 style="margin-bottom: 10px;">No Bots Yet</h2>
+        <p style="margin-bottom: 30px;">Create your first chatbot to get started!</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -83,30 +83,25 @@ def render_bot_card(bot: dict):
     
     # Mock fields for UI polish (since backend doesn't calculate these yet)
     status = "active" 
-    documents_count = 1 if "RAG" in description else 0 
     
     # Status Colors
-    status_colors = {
-        "active": "#10b981",
-        "inactive": "#6b7280"
-    }
-    status_color = status_colors.get(status, "#10b981")
+    status_color = "var(--accent)" if status == "active" else "var(--zinc-500)"
     
     # Render HTML Card
     st.markdown(f"""
-    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; height: 100%;">
+    <div class="glass-panel" style="padding: 20px; margin-bottom: 20px; height: 100%;">
         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-            <h3 style="color: #1e293b; margin: 0; font-size: 1.2rem;">{name}</h3>
-            <span style="background-color: {status_color}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem;">{status.upper()}</span>
+            <h3 style="margin: 0; font-size: 1.2rem;">{name}</h3>
+            <span style="background-color: {status_color}; color: var(--zinc-950); padding: 2px 8px; border-radius: 2px; font-size: 0.7rem; font-weight: bold;">{status.upper()}</span>
         </div>
-        <p style="color: #64748b; font-size: 0.85rem; margin-bottom: 15px; height: 40px; overflow: hidden;">{description}</p>
+        <p style="font-size: 0.85rem; margin-bottom: 15px; height: 40px; overflow: hidden;">{description}</p>
         <div style="margin-bottom: 15px;">
-            <span style="background-color: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; margin-right: 5px;">
+            <span style="background-color: var(--zinc-800); color: var(--text-primary); padding: 4px 10px; border-radius: 2px; font-size: 0.75rem; font-weight: 500; margin-right: 5px; border: 1px solid var(--border-color);">
                 🌐 {platform.upper()}
             </span>
         </div>
-        <p style="color: #94a3b8; font-size: 0.7rem; margin-top: 10px;">
-            ID: <code style="color: #64748b">{public_id[:8]}...</code>
+        <p style="color: var(--text-muted); font-size: 0.7rem; margin-top: 10px;">
+            ID: <code style="color: var(--accent); background: transparent;">{public_id[:8]}...</code>
         </p>
     </div>
     """, unsafe_allow_html=True)

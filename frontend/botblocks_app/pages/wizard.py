@@ -103,9 +103,9 @@ def show_navigation_buttons(can_proceed: bool = True):
 # --- STEP 1: WELCOME ---
 def show_welcome_step():
     st.markdown("""
-    <div style="background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center;">
-        <h2 style="color: #1e293b; margin-bottom: 20px;">👋 Welcome to BotBlocks!</h2>
-        <p style="color: #64748b; font-size: 1.125rem;">We'll guide you through creating your intelligent chatbot step by step.</p>
+    <div class="glass-panel" style="padding: 40px; text-align: center;">
+        <h2 style="margin-bottom: 20px;">👋 Welcome to BotBlocks!</h2>
+        <p style="font-size: 1.125rem;">We'll guide you through creating your intelligent chatbot step by step.</p>
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br/>", unsafe_allow_html=True)
@@ -232,7 +232,7 @@ def show_review_step():
     
     # Summary Card
     st.markdown(f"""
-    <div style="background-color: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 10px 0;">
+    <div class="glass-panel" style="padding: 20px; margin: 10px 0;">
         <strong>Bot Name:</strong> {st.session_state.bot_name}<br/>
         <strong>Job Type:</strong> {st.session_state.job_type}<br/>
         <strong>Persona:</strong> {st.session_state.persona_id.title()}<br/>
