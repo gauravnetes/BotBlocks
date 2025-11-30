@@ -18,7 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "botblocks_app"))
 st.set_page_config(
     page_title="BotBlocks - WordPress for Chatbots",
 
-    page_icon="🤖",
+    page_icon="./assets/logo.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
