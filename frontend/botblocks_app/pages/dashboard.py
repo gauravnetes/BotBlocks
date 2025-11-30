@@ -5,13 +5,22 @@ import os
 # Ensure imports work
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from botblocks_app.components.ui import inject_custom_css
+from botblocks_app.components.ui import inject_custom_css, render_code_snippet
 from botblocks_app.services import api  # Import the real service
 from botblocks_app.utils import format_datetime, is_demo_mode
 
 def show_dashboard():
     inject_custom_css()
     
+    # --- Custom Modal Logic (Fallback for older Streamlit) ---
+    if st.session_state.get("show_config_modal"):
+        bot = st.session_state.get("config_bot_data")
+        if bot:
+            render_config_modal(bot)
+            # Add a spacer to separate modal from dashboard
+            st.markdown("<br/>", unsafe_allow_html=True)
+            st.markdown("---")
+
     st.title("📊 Dashboard")
     st.markdown("Manage all your chatbots from one place")
     
@@ -56,6 +65,37 @@ def show_dashboard():
         st.error(f"❌ Error loading bots: {str(e)}")
         if is_demo_mode():
             st.info("ℹ️ No backend connection. Running in demo mode.")
+
+def render_config_modal(bot):
+    """
+    Renders a 'modal-like' section at the top of the page.
+    """
+    st.markdown("""
+    <div class="glass-panel" style="border: 1px solid var(--accent); padding: 20px; background-color: var(--zinc-900);">
+        <h3 style="color: var(--accent); margin-top: 0;">🔌 Embed Configuration</h3>
+        <p>Use the code below to add this chatbot to your website.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    public_id = bot.get("public_id")
+    backend_url = "http://localhost:8000"
+    
+    embed_code = f"""<script
+    src="{backend_url}/static/widget.js"
+    data-bot-id="{public_id}"
+    defer>
+</script>"""
+
+    render_code_snippet(embed_code, language="html")
+    
+    col1, col2 = st.columns([1, 5])
+    with col1:
+        if st.button("❌ Close Panel", type="secondary"):
+            del st.session_state["show_config_modal"]
+            del st.session_state["config_bot_data"]
+            st.rerun()
+    with col2:
+        st.info("The widget will appear in the bottom-right corner of your site.")
 
 def render_empty_state():
     st.markdown("""
@@ -116,10 +156,12 @@ def render_bot_card(bot: dict):
             st.rerun()
     
     with col2:
-        # For Hackathon, we disable Config
-        st.button("⚙️ Config", key=f"conf_{public_id}", disabled=True, use_container_width=True)
+        if st.button("⚙️ Config", key=f"conf_{public_id}", use_container_width=True):
+            # Set session state to show the modal
+            st.session_state["show_config_modal"] = True
+            st.session_state["config_bot_data"] = bot
+            st.rerun()
     
     with col3:
-        # Re-index is a mock action for now
-        if st.button("🔄 Re-index", key=f"idx_{public_id}", use_container_width=True):
-            st.toast("✅ Re-indexing started (Mock)")
+        # Placeholder for future delete functionality
+        st.button("🗑️ Delete", key=f"del_{public_id}", disabled=True, use_container_width=True)

@@ -15,10 +15,19 @@ load_dotenv()
 sys.path.append(os.path.join(os.path.dirname(__file__), "botblocks_app"))
 
 
+from PIL import Image
+
+# ... imports ...
+
+# Load the logo image
+try:
+    logo_image = Image.open("assets/icons/logo.png")
+except FileNotFoundError:
+    logo_image = "🤖" # Fallback if file not found
+
 st.set_page_config(
     page_title="BotBlocks - WordPress for Chatbots",
-
-    page_icon="./assets/logo.png",
+    page_icon=logo_image,
     layout="wide",
     initial_sidebar_state="expanded"
 )
