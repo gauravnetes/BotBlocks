@@ -14,7 +14,7 @@
         
         /* Toggle Button */
         .botblocks-toggle { 
-            background: #facc15; color: #18181b; width: 60px; height: 60px; 
+            background: #facc15; color: #18181b; width: 50px; height: 50px; 
             border-radius: 2px; cursor: pointer; display: flex; align-items: center; 
             justify-content: center; box-shadow: 4px 4px 0px #27272a; border: 1px solid #18181b;
             transition: transform 0.2s; 
@@ -100,7 +100,7 @@
         </div>
 
         <div class="botblocks-toggle" id="toggle-btn">
-            <img src="http://localhost:8000/static/logo.png" style="width: 20px; height: 20px;"> 
+            <img src="http://localhost:8000/static/logo.png" style="width: 35px; height: 35px;"> 
         </div>
     `;
     document.body.appendChild(widgetContainer);
