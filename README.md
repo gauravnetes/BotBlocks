@@ -99,7 +99,7 @@ Pre-configured personality templates that automatically adjust:
 
 | Layer | Technology | Why? |
 |-------|-----------|------|
-| **Frontend** | Streamlit/Gradio | Rapid Python-based UI development |
+| **Frontend** | Streamlit | Rapid Python-based UI development |
 | **Backend** | FastAPI | High-performance async API |
 | **Vector DB** | ChromaDB | Zero-config, file-based storage |
 | **RAG Framework** | LangChain/LlamaIndex | Production-ready RAG pipeline |
@@ -280,11 +280,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by the simplicity of WordPress
 - Powered by the open-source AI community
 
+## 👥 Team
+
+This project was built by a team of passionate developers:
+
+| Name | Role | GitHub | Contributions |
+|------|------|--------|---------------|
+| **Gourav Chandra** | Backend Developer | [@gauravnetes](https://github.com/gauravnetes) | RAG Engine, API Development, Vector DB Integration, LLM Pipeline |
+| **Souvik Rahut** | Frontend Developer | [@S-o-b-u](https://github.com/S-o-b-u) | UI/UX Design, Streamlit Interface, User Flow, Platform Integration |
+
 ## 📧 Contact
 
-**Gaurav** - [@gauravnetes](https://github.com/gauravnetes)
+**Project Repository**: [https://github.com/gauravnetes/BotBlocks](https://github.com/gauravnetes/BotBlocks)
 
-Project Link: [https://github.com/gauravnetes/BotBlocks](https://github.com/gauravnetes/BotBlocks)
+For questions or collaborations:
+- **Gourav Chandra** - [@gauravnetes](https://github.com/gauravnetes)
+- **Souvik Rahut** - [@S-o-b-u](https://github.com/S-o-b-u)
 
 ---
 
