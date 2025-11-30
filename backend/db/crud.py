@@ -26,3 +26,14 @@ def create_bot(db: Session, bot: schemas.BotCreate):
     db.commit()
     db.refresh(db_bot)
     return db_bot
+
+def delete_bot(db: Session, public_id: str):
+    """
+    Deletes a bot configuration from SQLite.
+    """
+    db_bot = get_bot_by_public_id(db, public_id)
+    if db_bot:
+        db.delete(db_bot)
+        db.commit()
+        return True
+    return False

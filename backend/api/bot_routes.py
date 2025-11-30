@@ -83,3 +83,17 @@ async def upload_knowledge(
     )
 
     return {"message": "File received! AI training started in the background."}
+
+@router.delete("/{public_id}")
+def delete_existing_bot(public_id: str, db: Session = Depends(get_db)):
+    """
+    Delete a bot.
+    """
+    success = crud.delete_bot(db, public_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Bot not found")
+    
+    # Optional: You could also try to delete the Chroma collection here,
+    # but for a hackathon, leaving the vector files is safer to avoid "File Lock" crashes.
+    
+    return {"message": "Bot deleted successfully"}
