@@ -4,7 +4,7 @@ import requests
 from typing import Optional, Dict, Any, List, Tuple
 from datetime import datetime
 
-BACKEND_URL = os.getenv("BOTBLOCKS_BACKEND", "http://localhost:8000")
+BACKEND_URL = os.getenv("BOTBLOCKS_BACKEND", "http://localhost:8000/api/v1")
 API_PREFIX = "/api/v1"
 
 DEMO_MODE = False

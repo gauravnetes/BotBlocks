@@ -7,6 +7,14 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "botblocks_app"))
 from botblocks_app.pages import landing, wizard, dashboard, bot_detail, admin, settings
 from botblocks_app.components.ui import inject_custom_css
 
+from dotenv import load_dotenv
+load_dotenv()
+
+# 2. Setup System Path
+# This ensures Python can find your 'botblocks_app' folder
+sys.path.append(os.path.join(os.path.dirname(__file__), "botblocks_app"))
+
+
 st.set_page_config(
     page_title="BotBlocks - WordPress for Chatbots",
 

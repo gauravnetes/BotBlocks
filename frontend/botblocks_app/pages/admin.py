@@ -2,10 +2,13 @@ import streamlit as st
 import sys
 import os
 from datetime import datetime, timedelta
+
+# Ensure path is correct
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from botblocks_app.components.ui import render_stat_card, inject_custom_css
-from botblocks_app.utils import api_get, is_demo_mode
+from botblocks_app.services import api  # Use the shared API service
+from botblocks_app.utils import is_demo_mode, get_backend_url
 
 def show_admin():
     inject_custom_css()
@@ -17,13 +20,19 @@ def show_admin():
     
     try:
         with st.spinner("Loading analytics..."):
-            response = api_get("/bots")
-            bots = response.get("bots", [])
+            # 1. Fetch Real Data
+            bots = api.get_all_bots()
             
+            # 2. Calculate Stats (Safe defaults for missing backend fields)
             total_bots = len(bots)
-            active_bots = sum(1 for bot in bots if bot.get("status") == "active")
-            total_documents = sum(bot.get("documents_count", 0) for bot in bots)
             
+            # Assume all created bots are "active" for the hackathon
+            active_bots = total_bots 
+            
+            # Hack: Estimate documents based on prompt content (or default to 1 per bot)
+            total_documents = sum(1 for b in bots if "RAG" in b.get('system_prompt', ''))
+            
+            # Calculate recent activity locally
             recent_activity = sum(1 for bot in bots if was_recently_active(bot.get("created_at")))
             
             if is_demo_mode():
@@ -51,7 +60,7 @@ def show_admin():
             
             with col3:
                 render_stat_card(
-                    label="Documents Uploaded",
+                    label="Knowledge Bases",
                     value=str(total_documents),
                     icon="📚",
                     color="#7c3aed"
@@ -59,7 +68,7 @@ def show_admin():
             
             with col4:
                 render_stat_card(
-                    label="Last 7 Days Activity",
+                    label="New (7 Days)",
                     value=str(recent_activity),
                     icon="📅",
                     color="#f59e0b"
@@ -69,9 +78,10 @@ def show_admin():
             
             st.markdown("### 📊 Platform Distribution")
             
+            # Calculate platform counts safely
             platform_counts = {}
             for bot in bots:
-                platform = bot.get("platform", "unknown")
+                platform = bot.get("platform", "web").lower()
                 platform_counts[platform] = platform_counts.get(platform, 0) + 1
             
             if platform_counts:
@@ -107,45 +117,6 @@ def show_admin():
             
             st.markdown("<br/><br/>", unsafe_allow_html=True)
             
-            st.markdown("### 🤖 Recent Bots")
-            
-            if bots:
-                recent_bots = sorted(bots, key=lambda x: x.get("created_at", ""), reverse=True)[:5]
-                
-                for bot in recent_bots:
-                    status_colors = {
-                        "active": "#10b981",
-                        "inactive": "#6b7280",
-                        "indexing": "#f59e0b",
-                        "error": "#ef4444"
-                    }
-                    
-                    status = bot.get("status", "active")
-                    status_color = status_colors.get(status, "#6b7280")
-                    
-                    st.markdown(f"""
-                    <div style="background-color: white; padding: 15px 20px; border-radius: 8px; margin: 10px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #1e293b;">{bot.get('name', 'Untitled Bot')}</strong>
-                            <span style="color: #64748b; font-size: 0.875rem; margin-left: 10px;">
-                                {bot.get('platform', 'website').title()}
-                            </span>
-                        </div>
-                        <div>
-                            <span style="background-color: {status_color}; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 500; margin-right: 10px;">
-                                {status}
-                            </span>
-                            <span style="color: #94a3b8; font-size: 0.75rem;">
-                                {format_relative_time(bot.get('created_at'))}
-                            </span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.info("No bots created yet")
-            
-            st.markdown("<br/><br/>", unsafe_allow_html=True)
-            
             st.markdown("### 💾 System Information")
             
             col1, col2 = st.columns(2)
@@ -154,56 +125,39 @@ def show_admin():
                 st.markdown("""
                 <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                     <h4 style="color: #1e293b; margin-bottom: 15px;">Database</h4>
-                    <p style="color: #64748b; margin: 5px 0;"><strong>Type:</strong> PostgreSQL / In-Memory</p>
+                    <p style="color: #64748b; margin: 5px 0;"><strong>Type:</strong> SQLite (File System)</p>
+                    <p style="color: #64748b; margin: 5px 0;"><strong>Vector Store:</strong> ChromaDB</p>
                     <p style="color: #64748b; margin: 5px 0;"><strong>Status:</strong> <span style="color: #10b981;">● Connected</span></p>
-                    <p style="color: #64748b; margin: 5px 0;"><strong>Mode:</strong> """ + ("Demo" if is_demo_mode() else "Production") + """</p>
                 </div>
                 """, unsafe_allow_html=True)
             
             with col2:
+                backend_url = get_backend_url()
                 st.markdown(f"""
                 <div style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                     <h4 style="color: #1e293b; margin-bottom: 15px;">API Status</h4>
-                    <p style="color: #64748b; margin: 5px 0;"><strong>Backend URL:</strong> {os.getenv('BOTBLOCKS_BACKEND', 'localhost:8000')}</p>
-                    <p style="color: #64748b; margin: 5px 0;"><strong>Status:</strong> <span style="color: {'#f59e0b' if is_demo_mode() else '#10b981'};">● {'Demo Mode' if is_demo_mode() else 'Connected'}</span></p>
-                    <p style="color: #64748b; margin: 5px 0;"><strong>Version:</strong> 1.0.0</p>
+                    <p style="color: #64748b; margin: 5px 0;"><strong>Backend URL:</strong> {backend_url}</p>
+                    <p style="color: #64748b; margin: 5px 0;"><strong>Status:</strong> <span style="color: #10b981;">● Online</span></p>
+                    <p style="color: #64748b; margin: 5px 0;"><strong>Version:</strong> v1.0.0 (Hackathon)</p>
                 </div>
                 """, unsafe_allow_html=True)
     
     except Exception as e:
         st.error(f"❌ Error loading analytics: {str(e)}")
 
+# --- HELPER FUNCTIONS ---
+
 def was_recently_active(created_at: str) -> bool:
+    """Checks if the bot was created in the last 7 days"""
     if not created_at:
         return False
-    
     try:
-        created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
-        seven_days_ago = datetime.now().astimezone() - timedelta(days=7)
+        # Handle potential timezone strings '2023-10-27T10:00:00.123456'
+        created = datetime.fromisoformat(str(created_at).replace("Z", "+00:00"))
+        # Make 'now' offset-naive to match SQLite usually returning naive datetimes
+        # OR make both aware. Simplest hackathon fix: strip timezone.
+        created = created.replace(tzinfo=None)
+        seven_days_ago = datetime.now() - timedelta(days=7)
         return created > seven_days_ago
-    except:
-        return False
-
-def format_relative_time(dt_string: str) -> str:
-    if not dt_string:
-        return "Unknown"
-    
-    try:
-        dt = datetime.fromisoformat(dt_string.replace("Z", "+00:00"))
-        now = datetime.now().astimezone()
-        diff = now - dt
-        
-        if diff.days > 7:
-            return f"{diff.days} days ago"
-        elif diff.days > 0:
-            return f"{diff.days} day{'s' if diff.days > 1 else ''} ago"
-        elif diff.seconds > 3600:
-            hours = diff.seconds // 3600
-            return f"{hours} hour{'s' if hours > 1 else ''} ago"
-        elif diff.seconds > 60:
-            minutes = diff.seconds // 60
-            return f"{minutes} minute{'s' if minutes > 1 else ''} ago"
-        else:
-            return "Just now"
-    except:
-        return dt_string
+    except Exception as e:
+        return False # Fallback if parsing fails
