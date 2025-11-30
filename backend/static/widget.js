@@ -14,7 +14,7 @@
         
         /* Toggle Button */
         .botblocks-toggle { 
-            background: #19fa15ff; color: #18181b; width: 60px; height: 60px; 
+            background: #facc15; color: #18181b; width: 60px; height: 60px; 
             border-radius: 2px; cursor: pointer; display: flex; align-items: center; 
             justify-content: center; box-shadow: 4px 4px 0px #27272a; border: 1px solid #18181b;
             transition: transform 0.2s; 
