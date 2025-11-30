@@ -163,5 +163,12 @@ def render_bot_card(bot: dict):
             st.rerun()
     
     with col3:
-        # Placeholder for future delete functionality
-        st.button("🗑️ Delete", key=f"del_{public_id}", disabled=True, use_container_width=True)
+        if st.button("🗑️ Delete", key=f"del_{public_id}", type="secondary", use_container_width=True):
+            if api.delete_bot(public_id):
+                st.toast(f"✅ Bot '{name}' deleted successfully!")
+                # Small delay to let toast show, then rerun
+                import time
+                time.sleep(1) 
+                st.rerun()
+            else:
+                st.error("Failed to delete bot.")
