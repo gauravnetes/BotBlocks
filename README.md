@@ -327,6 +327,7 @@ This project was built by a team of passionate developers:
 |------|------|--------|---------------|
 | **Gourav Chandra** | Backend Developer | [@gauravnetes](https://github.com/gauravnetes) | RAG Engine, API Development, Vector DB Integration, LLM Pipeline |
 | **Souvik Rahut** | Frontend Developer | [@S-o-b-u](https://github.com/S-o-b-u) | UI/UX Design, Streamlit Interface, User Flow, Platform Integration |
+| **Shriparna Prasad** | Design Lead | [@S-h-r-i-p-a-r-n-a](https://github.com/S-h-r-i-p-a-r-n-a) | Created and managed the project's visual style, themes, and design system |
 
 ## 📧 Contact
 
@@ -335,6 +336,7 @@ This project was built by a team of passionate developers:
 For questions or collaborations:
 - **Gourav Chandra** - [@gauravnetes](https://github.com/gauravnetes)
 - **Souvik Rahut** - [@S-o-b-u](https://github.com/S-o-b-u)
+- **Shriparna Prasad** - [@S-h-r-i-p-a-r-n-a](https://github.com/S-h-r-i-p-a-r-n-a)
 
 ---
 
