@@ -1,1 +1,23 @@
+# --- Virtual Environment (Big folders to ignore) ---
+.venv/
+./.venv/
+venv/
+env/
+backend/.venv/
+# --- Python Cache (Junk files) ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Security (NEVER push these) ---
 .env
+.env.local
+.env.*
+
+# --- IDE Settings ---
+.vscode/
+.idea/
+
+# --- Database (If you use local SQLite) ---
+*.sqlite3
+*.db

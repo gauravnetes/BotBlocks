@@ -55,6 +55,63 @@ def show_bot_detail():
 
 def show_overview_tab(bot: dict):
     st.markdown("### 📊 Bot Information")
+import streamlit as st
+import sys
+import os
+import json
+import uuid
+
+# Ensure imports work
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from botblocks_app.components.ui import render_chat_bubble, render_code_snippet, inject_custom_css
+from botblocks_app.services import api  # Import the real service
+from botblocks_app.utils import format_datetime, get_backend_url
+
+def show_bot_detail():
+    inject_custom_css()
+    
+    # 1. Get Bot from Session
+    bot = st.session_state.get('selected_bot')
+    
+    if not bot:
+        st.warning("⚠️ No bot selected")
+        if st.button("← Back to Dashboard"):
+            st.session_state.current_page = "dashboard"
+            st.rerun()
+        return
+    
+    public_id = bot.get('public_id')
+    
+    # Header Section
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        st.title(f"🤖 {bot.get('name', 'Bot Details')}")
+        st.markdown(f"**ID:** `{public_id}`")
+    with col2:
+        if st.button("← Dashboard", use_container_width=True):
+            st.session_state.current_page = "dashboard"
+            st.rerun()
+    
+    st.markdown("<br/>", unsafe_allow_html=True)
+    
+    # Tabs
+    tab1, tab2, tab3, tab4 = st.tabs(["📋 Overview", "💬 Test Chat", "🔗 Embed Widget", "⚙️ Configuration"])
+    
+    with tab1:
+        show_overview_tab(bot)
+    
+    with tab2:
+        show_chat_tab(bot)
+    
+    with tab3:
+        show_embed_tab(bot)
+    
+    with tab4:
+        show_configuration_tab(bot)
+
+def show_overview_tab(bot: dict):
+    st.markdown("### 📊 Bot Information")
     
     status = "active" # Hardcoded for MVP
     status_color = "#10b981"
@@ -63,11 +120,11 @@ def show_overview_tab(bot: dict):
     
     with col1:
         st.markdown(f"""
-        <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-            <strong style="color: #64748b; font-size: 0.875rem;">Status</strong>
+        <div class="glass-panel" style="padding: 20px;">
+            <strong style="color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase;">Status</strong>
             <div style="margin-top: 10px;">
-                <span style="background-color: {status_color}; color: white; padding: 6px 14px; border-radius: 16px; font-size: 0.875rem; font-weight: 500;">
-                    {status.title()}
+                <span style="background-color: var(--accent); color: var(--zinc-950); padding: 6px 14px; border-radius: 2px; font-size: 0.875rem; font-weight: bold;">
+                    {status.upper()}
                 </span>
             </div>
         </div>
@@ -75,10 +132,10 @@ def show_overview_tab(bot: dict):
     
     with col2:
         st.markdown(f"""
-        <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-            <strong style="color: #64748b; font-size: 0.875rem;">Platform</strong>
-            <div style="margin-top: 10px; font-size: 1.25rem; color: #1e293b;">
-                🌐 {bot.get('platform', 'website').title()}
+        <div class="glass-panel" style="padding: 20px;">
+            <strong style="color: var(--text-muted); font-size: 0.875rem; text-transform: uppercase;">Platform</strong>
+            <div style="margin-top: 10px; font-size: 1.25rem; color: var(--text-primary);">
+                🌐 {bot.get('platform', 'website').upper()}
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -89,10 +146,10 @@ def show_overview_tab(bot: dict):
     desc = bot.get('description') or bot.get('system_prompt', 'No description')
     
     st.markdown(f"""
-    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px;">
-        <h4 style="color: #1e293b; margin-bottom: 15px;">Details</h4>
-        <p style="color: #64748b; margin: 8px 0;"><strong>System Prompt:</strong> {desc[:100]}...</p>
-        <p style="color: #64748b; margin: 8px 0;"><strong>Created:</strong> {format_datetime(bot.get('created_at'))}</p>
+    <div class="glass-panel" style="padding: 20px; margin-bottom: 20px;">
+        <h4 style="margin-bottom: 15px; color: var(--accent);">DETAILS</h4>
+        <p style="margin: 8px 0;"><strong>System Prompt:</strong> {desc[:100]}...</p>
+        <p style="margin: 8px 0;"><strong>Created:</strong> {format_datetime(bot.get('created_at'))}</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -118,12 +175,12 @@ def show_chat_tab(bot: dict):
 
     # Chat Container
     st.markdown("""
-    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); max-height: 500px; overflow-y: auto; margin-bottom: 20px;">
+    <div class="glass-panel" style="padding: 20px; max-height: 500px; overflow-y: auto; margin-bottom: 20px;">
     """, unsafe_allow_html=True)
     
     if not st.session_state.chat_messages:
         st.markdown("""
-        <div style="text-align: center; padding: 40px; color: #94a3b8;">
+        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
             <div style="font-size: 3rem; margin-bottom: 10px;">💬</div>
             <p>No messages yet. Start a conversation!</p>
         </div>
@@ -201,10 +258,10 @@ def show_configuration_tab(bot: dict):
     st.markdown("### ⚙️ Bot Configuration")
     
     st.markdown(f"""
-    <div style="background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px;">
-        <h4 style="color: #1e293b; margin-bottom: 15px;">System Prompt</h4>
-        <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #0f766e;">
-            <code style="color: #475569; font-size: 0.875rem; white-space: pre-wrap;">
+    <div class="glass-panel" style="padding: 20px; margin-bottom: 20px;">
+        <h4 style="margin-bottom: 15px; color: var(--accent);">SYSTEM PROMPT</h4>
+        <div style="background-color: var(--zinc-950); padding: 15px; border-radius: 2px; border-left: 4px solid var(--accent);">
+            <code style="color: var(--text-secondary); font-size: 0.875rem; white-space: pre-wrap; background: transparent;">
 {bot.get('system_prompt', 'No system prompt configured')}
             </code>
         </div>

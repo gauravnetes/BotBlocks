@@ -1,24 +1,23 @@
-# --- Virtual Environments ---
-# Ignores all 'venv' folders, wherever they are
-**/.venv/
+# --- Virtual Environments (The culprit!) ---
+venv/
+.venv/
+env/
+.env/
 
-# --- Python Cache ---
+# --- Python Cache (Junk files) ---
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 
-# --- IDE/Editor Files ---
+# --- Environment Variables (Security Risk) ---
+.env
+.env.local
+*.env
+
+# --- OS & Editor Files ---
+.DS_Store
 .vscode/
 .idea/
-.DS_Store
 
-# --- Secrets & Config ---
-# Never commit your environment variables or secrets!
-.env
-*.env
-secrets.toml
+# --- Streamlit specific ---
 .streamlit/secrets.toml
-
-# --- Log Files ---
-*.log

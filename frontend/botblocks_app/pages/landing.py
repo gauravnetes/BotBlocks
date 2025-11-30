@@ -21,7 +21,7 @@ def show_landing():
     
     st.markdown("<br/>", unsafe_allow_html=True)
     
-    st.markdown("<h2 style='text-align: center; color: #1e293b; margin-bottom: 30px;'>Why Choose BotBlocks?</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; margin-bottom: 30px;'>Why Choose BotBlocks?</h2>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
     
@@ -74,9 +74,9 @@ def show_landing():
     st.markdown("<br/><br/>", unsafe_allow_html=True)
     
     st.markdown("""
-    <div style="background-color: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-        <h2 style="color: #1e293b; margin-bottom: 20px;">Ready to Build Your Bot?</h2>
-        <p style="color: #64748b; font-size: 1.125rem; margin-bottom: 30px;">
+    <div class="glass-panel" style="padding: 40px; text-align: center;">
+        <h2 style="margin-bottom: 20px;">Ready to Build Your Bot?</h2>
+        <p style="font-size: 1.125rem; margin-bottom: 30px;">
             Join thousands of users who are already using BotBlocks to power their customer support, 
             sales, and engagement workflows.
         </p>
@@ -110,4 +110,4 @@ def show_landing():
         """)
     
     st.markdown("<br/>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #94a3b8; font-size: 0.875rem;'>© 2024 BotBlocks - WordPress for Chatbots</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-size: 0.875rem; opacity: 0.7;'>© 2024 BotBlocks - WordPress for Chatbots</p>", unsafe_allow_html=True)
