@@ -103,7 +103,7 @@ Pre-configured personality templates that automatically adjust:
 | **Backend** | FastAPI | High-performance async API |
 | **Vector DB** | ChromaDB | Zero-config, file-based storage |
 | **RAG Framework** | LangChain/LlamaIndex | Production-ready RAG pipeline |
-| **LLM** | Gemini/OpenAI API | State-of-the-art language models |
+| **LLM** | Gemini | State-of-the-art language models |
 | **Embeddings** | text-embedding-ada-002 | Semantic search capability |
 
 ## 📦 Installation
@@ -132,6 +132,10 @@ cp .env.example .env
 # Edit .env with your API keys
 
 # Run the application
+python main.py
+
+# Or run frontend separately
+cd frontend
 streamlit run app.py
 ```
 
@@ -190,33 +194,68 @@ Result: Interactive community assistant
 ### Project Structure
 ```
 BotBlocks/
-├── app.py                 # Main Streamlit application
 ├── backend/
-│   ├── api.py            # FastAPI endpoints
-│   ├── rag_engine.py     # RAG logic
-│   └── data_processor.py # Document chunking & embedding
-├── bots/
-│   ├── telegram_bot.py   # Telegram integration
-│   ├── discord_bot.py    # Discord integration
-│   └── web_widget.py     # Web embed code
-├── models/
-│   └── personas.py       # Persona configurations
-├── vector_store/         # ChromaDB storage
-└── requirements.txt
+│   ├── api/
+│   │   ├── bot_routes.py      # Bot management endpoints
+│   │   └── chat_routes.py     # Chat interaction endpoints
+│   ├── core/
+│   │   ├── config.py          # Configuration management
+│   │   └── security.py        # Authentication & security
+│   ├── data/
+│   │   ├── chroma_db/         # Vector database storage
+│   │   └── persistent_db.sqlite # SQLite for metadata
+│   ├── db/
+│   │   ├── crud.py            # Database operations
+│   │   ├── database.py        # Database connection
+│   │   ├── models.py          # SQLAlchemy models
+│   │   └── schemas.py         # Pydantic schemas
+│   └── services/
+│       ├── data_ingestion.py  # Document processing
+│       ├── llm_service.py     # LLM API integration
+│       └── rag_pipeline.py    # RAG implementation
+├── frontend/
+│   ├── .streamlit/
+│   │   └── config.toml        # Streamlit configuration
+│   ├── botblocks_app/
+│   │   ├── components/
+│   │   │   └── ui.py          # Reusable UI components
+│   │   ├── pages/
+│   │   │   ├── admin.py       # Admin dashboard
+│   │   │   ├── bot_detail.py  # Bot configuration page
+│   │   │   ├── dashboard.py   # Main dashboard
+│   │   │   ├── landing.py     # Landing page
+│   │   │   ├── settings.py    # Settings page
+│   │   │   └── wizard.py      # Bot creation wizard
+│   │   ├── services/
+│   │   │   └── api.py         # Frontend API client
+│   │   ├── styles.css         # Custom CSS
+│   │   └── utils.py           # Utility functions
+│   └── app.py                 # Main Streamlit app
+├── static/
+│   └── widget.js              # Embeddable web widget
+├── .env.example               # Environment variables template
+├── .gitignore                 # Git ignore rules
+├── check_models.py            # Model verification script
+├── main.py                    # Application entry point
+├── requirements.txt           # Python dependencies
+├── to_uninstall.txt           # Cleanup reference
+└── README.md                  # This file
 ```
 
 ### Adding a New Block Type
 
 ```python
-# In backend/blocks.py
+# In backend/services/rag_pipeline.py
 
-class CustomBlock(BaseBlock):
+class CustomBlock:
     def __init__(self, config):
         self.config = config
     
     async def process(self, message, context):
         # Your block logic here
         return response
+
+# Register in backend/api/bot_routes.py
 ```
 
 ### Testing
@@ -306,3 +345,14 @@ For questions or collaborations:
 Made with ❤️ for the no-code revolution
 
 </div>
+
+
+
+
+
+
+
+
+
+
+
