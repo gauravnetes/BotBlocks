@@ -9,6 +9,7 @@ from botblocks_app.components.ui import inject_custom_css
 
 st.set_page_config(
     page_title="BotBlocks - WordPress for Chatbots",
+
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
