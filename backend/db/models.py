@@ -15,10 +15,13 @@ class Bot(Base):
     platform_token = Column(String, nullable=True)
     allowed_origin = Column(String, default="*")
     
-    # widget appearance
-    theme_color = Column(String, default="#0f766e")
-    initial_message = Column(Text, default = "Hello! How can I help you today?")
-    bot_avatar = Column(String, default="🤖")
+    # widget appearance (legacy fields - keeping for backwards compatibility)
+    # theme_color = Column(String, default="#0f766e")
+    # initial_message = Column(Text, default = "Hello! How can I help you today?")
+    # bot_avatar = Column(String, default="🤖")
+    
+    # New widget configuration (JSON)
+    widget_config = Column(Text, default='{"theme": "modern", "primary_color": "#3b82f6", "avatar_url": null, "welcome_message": "Hello! How can I help you today?", "bot_display_name": null, "position": "bottom-right", "button_style": "circle"}')
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

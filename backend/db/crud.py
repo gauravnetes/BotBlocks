@@ -20,11 +20,7 @@ def create_bot(db: Session, bot: schemas.BotCreate):
         system_prompt = bot.system_prompt, 
         platform = bot.platform, 
         platform_token = bot.platform_token, 
-        allowed_origin = bot.allowed_origin,
-        
-        theme_color = bot.theme_color,
-        initial_message = bot.initial_message, 
-        bot_avatar = bot.bot_avatar
+        allowed_origin = bot.allowed_origin
     )
     
     db.add(db_bot)
@@ -59,3 +55,22 @@ def delete_bot(db: Session, public_id: str):
         db.commit()
         return True
     return False
+
+def update_widget_config(db: Session, public_id: str, widget_config: str):
+    """Update widget configuration JSON"""
+    db_bot = get_bot_by_public_id(db, public_id)
+    if not db_bot:
+        return None
+    
+    db_bot.widget_config = widget_config
+    db.commit()
+    db.refresh(db_bot)
+    return db_bot
+
+def get_widget_config(db: Session, public_id: str):
+    """Get widget configuration as JSON string"""
+    db_bot = get_bot_by_public_id(db, public_id)
+    if not db_bot:
+        return None
+    
+    return db_bot.widget_config

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBot, uploadFile } from "@/lib/api";
+import { createBot, uploadFile, updateWidgetConfig } from "@/lib/api";
 import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,6 +20,8 @@ export default function CreateBotWizard() {
   const [customPrompt, setCustomPrompt] = useState("");
   const [platform, setPlatform] = useState<"web" | "telegram" | "discord">("web");
   const [platformToken, setPlatformToken] = useState("");
+  const [theme, setTheme] = useState<"modern" | "classic" | "minimal">("modern");
+  const [welcomeMessage, setWelcomeMessage] = useState("Hello! How can I help you today?");
 
   const handleCreate = async () => {
     setIsLoading(true);
@@ -45,7 +47,13 @@ export default function CreateBotWizard() {
         }
       }
 
-      // 4. Redirect
+      // 4. Update Widget Config
+      await updateWidgetConfig(newBot.public_id, {
+        theme,
+        welcome_message: welcomeMessage,
+      });
+
+      // 5. Redirect
       router.push("/dashboard");
       router.refresh();
 
@@ -68,7 +76,7 @@ export default function CreateBotWizard() {
         </Link>
         <h1 className="text-3xl font-bold text-white">Create New Bot</h1>
         <div className="flex gap-2 mt-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
             <div
               key={i}
               className={`h-1 flex-1 rounded-full transition-colors duration-300 ${i <= step ? "bg-blue-500" : "bg-zinc-800"}`}
@@ -289,9 +297,64 @@ export default function CreateBotWizard() {
               </div>
             </div>
           )}
-
-          {/* Step 6: Review */}
+          {/* Step 6: Theme Selection */}
           {step === 6 && (
+            <div className="space-y-6">
+              <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <MessageCircle className="w-6 h-6" /> Widget Appearance
+              </h2>
+
+              {/* Theme Selector */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-3">Select Widget Theme</label>
+                <div className="grid grid-cols-3 gap-4">
+                  {(['modern', 'classic', 'minimal'] as const).map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTheme(t)}
+                      className={`p-6 rounded-xl border transition-all ${theme === t
+                          ? 'bg-blue-600/20 border-blue-500'
+                          : 'bg-zinc-900 border-white/10 hover:border-white/20'
+                        }`}
+                    >
+                      <div className="text-3xl mb-3">
+                        {t === 'modern' ? '💎' : t === 'classic' ? '📋' : '✨'}
+                      </div>
+                      <div className={`font-semibold capitalize ${theme === t ? 'text-white' : 'text-zinc-400'}`}>
+                        {t}
+                      </div>
+                      <div className="text-xs text-zinc-500 mt-1">
+                        {t === 'modern' && 'Glassmorphism'}
+                        {t === 'classic' && 'Professional'}
+                        {t === 'minimal' && 'Ultra Clean'}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Welcome Message */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-3">Welcome Message</label>
+                <textarea
+                  value={welcomeMessage}
+                  onChange={(e) => setWelcomeMessage(e.target.value)}
+                  className="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 text-white h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  placeholder="Hello! How can I help you today?"
+                />
+              </div>
+
+              <div className="flex justify-between">
+                <button onClick={prevStep} className="text-zinc-400 hover:text-white">Back</button>
+                <button onClick={nextStep} className="bg-blue-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-blue-500 flex items-center gap-2">
+                  Continue <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 7: Review */}
+          {step === 7 && (
             <div className="space-y-6">
               <h2 className="text-xl font-bold text-white mb-4">Review & Create</h2>
 

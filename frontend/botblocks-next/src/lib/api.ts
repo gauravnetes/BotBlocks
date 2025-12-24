@@ -67,3 +67,20 @@ export async function chatWithBot(botId: string, message: string): Promise<strin
   const data = await res.json();
   return data.response;
 }
+
+// Widget Configuration
+export async function getWidgetConfig(public_id: string) {
+  const res = await fetch(`${API_URL}/api/v1/bots/${public_id}/widget-config`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch widget config");
+  return res.json();
+}
+
+export async function updateWidgetConfig(public_id: string, config: any) {
+  const res = await fetch(`${API_URL}/api/v1/bots/${public_id}/widget-config`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(config),
+  });
+  if (!res.ok) throw new Error("Failed to update widget config");
+  return res.json();
+}

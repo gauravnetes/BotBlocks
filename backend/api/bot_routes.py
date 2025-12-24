@@ -155,3 +155,70 @@ def download_file(public_id: str, filename: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="File not found")
     
     return RedirectResponse(url)
+
+# ===== WIDGET CONFIGURATION ENDPOINTS =====
+
+@router.get("/{public_id}/widget-config")
+def get_widget_configuration(public_id: str, db: Session = Depends(get_db)):
+    """
+    Public endpoint to get widget configuration (used by embedded widget)
+    """
+    import json
+    
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot not found")
+    
+    # Parse widget_config JSON
+    try:
+        widget_config = json.loads(bot.widget_config) if bot.widget_config else {}
+    except json.JSONDecodeError:
+        # Fallback to default if JSON is invalid
+        widget_config = {
+            "theme": "modern",
+            "primary_color": "#3b82f6",
+            "avatar_url": None,
+            "welcome_message": "Hello! How can I help you today?",
+            "bot_display_name": None,
+            "position": "bottom-right",
+            "button_style": "circle"
+        }
+    
+    # Override with bot name if display name not set
+    if not widget_config.get("bot_display_name"):
+        widget_config["bot_display_name"] = bot.name
+    
+    return widget_config
+
+@router.put("/{public_id}/widget-config")
+def update_widget_configuration(
+    public_id: str,
+    config: schemas.WidgetConfigUpdate,
+    db: Session = Depends(get_db)
+):
+    """
+    Update widget configuration
+    """
+    import json
+    
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot not found")
+    
+    # Get current config
+    try:
+        current_config = json.loads(bot.widget_config) if bot.widget_config else {}
+    except json.JSONDecodeError:
+        current_config = {}
+    
+    # Update only provided fields
+    update_data = config.dict(exclude_unset=True)
+    current_config.update(update_data)
+    
+    # Save back as JSON string
+    updated_bot = crud.update_widget_config(db, public_id, json.dumps(current_config))
+    
+    if not updated_bot:
+        raise HTTPException(status_code=500, detail="Failed to update configuration")
+    
+    return {"message": "Widget configuration updated successfully", "config": current_config}
