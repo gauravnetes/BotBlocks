@@ -1,0 +1,371 @@
+# 🤖 BotBlocks
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+
+> **The WordPress for Chatbots** - Build production-ready AI chatbots in 60 seconds, no coding required.
+
+BotBlocks is a modular, low-code chatbot builder that lets non-developers create sophisticated AI-powered chatbots by simply selecting pre-built functional blocks. Think of it as assembling LEGO blocks instead of writing code.
+
+## 📸 Screenshots
+
+### Landing Page
+<img width="1919" height="873" alt="Screenshot 2025-11-30 221658" src="https://github.com/user-attachments/assets/816f00ed-91c4-4d15-98f0-8d62675b5663" />
+
+*Clean, intuitive landing page with clear value proposition*
+
+### Bot Creation Wizard
+<img width="1913" height="873" alt="Screenshot 2025-11-30 221731" src="https://github.com/user-attachments/assets/a9c07a65-1ca0-406c-a3af-b7d742e40b34" />
+
+*8-step guided wizard - from welcome to deployment in minutes*
+
+### Dashboard
+<img width="1908" height="872" alt="Screenshot 2025-11-30 221817" src="https://github.com/user-attachments/assets/96f541fd-4266-456e-bd89-7e2105078899" />
+
+*Manage all your bots from one centralized dashboard*
+
+### Analytics & Admin
+<img width="1884" height="875" alt="Screenshot 2025-11-30 221834" src="https://github.com/user-attachments/assets/eb4b8a37-4384-40fc-a7e7-1212e67ee6b7" />
+
+*Monitor platform usage and bot activity in real-time*
+
+## 🎯 The Problem
+
+Existing chatbot platforms fall into two extremes:
+- **Complex Flow Builders** (like Botpress, Voiceflow) - Powerful but require learning curves with nodes, intents, and entities
+- **Simple One-Trick Tools** (like Chatbase, Dante AI) - Easy but limited to basic Q&A functionality
+
+**BotBlocks sits in the sweet spot** - offering modular functionality without the complexity.
+
+## ✨ What Makes BotBlocks Unique
+
+### 1. **Block Assembler, Not Flow Builder**
+Instead of dragging nodes and connecting logic flows, users simply check boxes:
+- ☑️ Knowledge Base Q&A
+- ☑️ Lead Capture
+- ☑️ Customer Support
+- ☑️ Human Handoff
+
+BotBlocks automatically stitches these blocks together in the backend.
+
+### 2. **Persona-First Design**
+Choose your bot's personality upfront:
+- 😊 Friendly & Casual
+- 💼 Professional & Formal
+- 😏 Witty & Sarcastic
+
+No need to craft complex prompts - we handle the system engineering.
+
+### 3. **Built for the 80% Use Case**
+Focus on speed and simplicity for common scenarios, not attempting to be everything to everyone.
+
+## 🚀 Features
+
+### Core Components
+
+#### 🤖 Bot Functions
+- **General Q&A Bot** - Answers based on your knowledge base using RAG (Retrieval-Augmented Generation)
+- **Lead Generation Bot** - Captures user information with customizable fields
+- **Customer Support Bot** - Hybrid Q&A with intelligent human handoff
+- **Custom Workflows** - Combine multiple blocks for complex scenarios
+
+#### 📚 Knowledge Base Options
+- **File Upload** - PDF, TXT, MD, DOCX support
+- **Website Scraping** - Extract content from any URL
+- **Manual Entry** - Direct text input for Q&A pairs
+- **Multi-Source** - Combine different data sources
+
+#### 🎨 Bot Personas
+Pre-configured personality templates that automatically adjust:
+- Tone and language style
+- Response formatting
+- Emoji usage
+- Formality level
+
+#### 🔌 Platform Integration
+- **Telegram** - Fast deployment with webhook support
+- **Discord** - Server and DM bot capabilities
+- **Web Widget** - Embeddable chat interface for websites
+- **API Endpoint** - RESTful API for custom integrations
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐
+│   Frontend UI   │ ← User configures bot (Streamlit/Gradio)
+│  (The Builder)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Backend API    │ ← Processes config & manages data
+│ (Control Plane) │    (FastAPI/Flask)
+└────────┬────────┘
+         │
+         ├─────────────────┐
+         ▼                 ▼
+┌─────────────────┐  ┌──────────────┐
+│  Vector Store   │  │  Bot Engine  │ ← Handles responses
+│   (ChromaDB)    │  │ (LangChain)  │    (RAG + LLM)
+└─────────────────┘  └──────┬───────┘
+                            │
+                            ▼
+                     ┌──────────────┐
+                     │ LLM API      │
+                     │ (Gemini/GPT) │
+                     └──────────────┘
+```
+
+## 🛠️ Tech Stack
+
+| Layer | Technology | Why? |
+|-------|-----------|------|
+| **Frontend** | Streamlit | Rapid Python-based UI development |
+| **Backend** | FastAPI | High-performance async API |
+| **Vector DB** | ChromaDB | Zero-config, file-based storage |
+| **RAG Framework** | LangChain/LlamaIndex | Production-ready RAG pipeline |
+| **LLM** | Gemini | State-of-the-art language models |
+| **Embeddings** | text-embedding-ada-002 | Semantic search capability |
+
+## 📦 Installation
+
+### Prerequisites
+- Python 3.8+
+- pip or conda
+- API keys (OpenAI/Gemini)
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/gauravnetes/BotBlocks.git
+cd BotBlocks
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys
+
+# Run the application
+python main.py
+
+# Or run frontend separately
+cd frontend
+streamlit run app.py
+```
+
+## 🎮 Usage
+
+### Creating Your First Bot (60 Seconds)
+
+1. **Choose Bot Function**
+   - Select "General Q&A Bot" for your first bot
+
+2. **Upload Knowledge Base**
+   - Drag and drop a PDF file (e.g., your product manual)
+   - Or paste a website URL to scrape
+
+3. **Select Persona**
+   - Choose "Friendly & Casual" from the dropdown
+
+4. **Pick Platform**
+   - Select "Telegram" for instant deployment
+   - Paste your Telegram Bot Token
+
+5. **Deploy**
+   - Click "Create Bot" and you're live!
+
+### Example Use Cases
+
+**Small Business Owner**
+```
+Function: Customer Support Bot
+Knowledge: FAQ PDF + Website
+Persona: Professional
+Platform: Web Widget
+Result: 24/7 automated support on website
+```
+
+**Event Organizer**
+```
+Function: Lead Generation Bot
+Knowledge: Event details document
+Persona: Friendly & Casual
+Platform: Telegram
+Result: Automated attendee registration
+```
+
+**Content Creator**
+```
+Function: Q&A Bot
+Knowledge: All blog posts (scraped)
+Persona: Witty & Sarcastic
+Platform: Discord
+Result: Interactive community assistant
+```
+
+## 🧪 Development
+
+### Project Structure
+```
+BotBlocks/
+├── backend/
+│   ├── api/
+│   │   ├── bot_routes.py      # Bot management endpoints
+│   │   └── chat_routes.py     # Chat interaction endpoints
+│   ├── core/
+│   │   ├── config.py          # Configuration management
+│   │   └── security.py        # Authentication & security
+│   ├── data/
+│   │   ├── chroma_db/         # Vector database storage
+│   │   └── persistent_db.sqlite # SQLite for metadata
+│   ├── db/
+│   │   ├── crud.py            # Database operations
+│   │   ├── database.py        # Database connection
+│   │   ├── models.py          # SQLAlchemy models
+│   │   └── schemas.py         # Pydantic schemas
+│   └── services/
+│       ├── data_ingestion.py  # Document processing
+│       ├── llm_service.py     # LLM API integration
+│       └── rag_pipeline.py    # RAG implementation
+├── frontend/
+│   ├── .streamlit/
+│   │   └── config.toml        # Streamlit configuration
+│   ├── botblocks_app/
+│   │   ├── components/
+│   │   │   └── ui.py          # Reusable UI components
+│   │   ├── pages/
+│   │   │   ├── admin.py       # Admin dashboard
+│   │   │   ├── bot_detail.py  # Bot configuration page
+│   │   │   ├── dashboard.py   # Main dashboard
+│   │   │   ├── landing.py     # Landing page
+│   │   │   ├── settings.py    # Settings page
+│   │   │   └── wizard.py      # Bot creation wizard
+│   │   ├── services/
+│   │   │   └── api.py         # Frontend API client
+│   │   ├── styles.css         # Custom CSS
+│   │   └── utils.py           # Utility functions
+│   └── app.py                 # Main Streamlit app
+├── static/
+│   └── widget.js              # Embeddable web widget
+├── .env.example               # Environment variables template
+├── .gitignore                 # Git ignore rules
+├── check_models.py            # Model verification script
+├── main.py                    # Application entry point
+├── requirements.txt           # Python dependencies
+├── to_uninstall.txt           # Cleanup reference
+└── README.md                  # This file
+```
+
+### Adding a New Block Type
+
+```python
+# In backend/services/rag_pipeline.py
+
+class CustomBlock:
+    def __init__(self, config):
+        self.config = config
+    
+    async def process(self, message, context):
+        # Your block logic here
+        return response
+
+# Register in backend/api/bot_routes.py
+```
+
+### Testing
+
+```bash
+# Run unit tests
+pytest tests/
+
+# Run integration tests
+pytest tests/integration/
+
+# Test a specific bot function
+python -m tests.test_qa_bot
+```
+
+## 🎯 Roadmap
+
+### Phase 1: MVP (Current)
+- [x] Basic RAG implementation
+- [x] Telegram integration
+- [x] Three core personas
+- [x] PDF upload support
+
+### Phase 2: Enhancement
+- [ ] Discord integration
+- [ ] Web widget with customization
+- [ ] Advanced lead capture forms
+- [ ] Analytics dashboard
+
+### Phase 3: Advanced Features
+- [ ] Multi-language support
+- [ ] Voice bot capability
+- [ ] Integration marketplace (Calendly, Stripe, etc.)
+- [ ] A/B testing for personas
+- [ ] Conversation analytics
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/AmazingFeature`)
+3. **Commit your changes** (`git commit -m 'Add some AmazingFeature'`)
+4. **Push to the branch** (`git push origin feature/AmazingFeature`)
+5. **Open a Pull Request**
+
+### Contribution Ideas
+- Add new platform integrations (WhatsApp, Slack, MS Teams)
+- Create additional persona templates
+- Improve RAG accuracy with better chunking strategies
+- Build a block for appointment booking
+- Add multi-language support
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built for hackathons, by hackathon enthusiasts
+- Inspired by the simplicity of WordPress
+- Powered by the open-source AI community
+
+## 👥 Team
+
+This project was built by a team of passionate developers:
+
+| Name | Role | GitHub | Contributions |
+|------|------|--------|---------------|
+| **Gourav Chandra** | Backend Developer | [@gauravnetes](https://github.com/gauravnetes) | RAG Pipeline, FastAPI Architecture, Vector DB Integration, LLM Service |
+| **Souvik Rahut** | Frontend & Design Lead | [@S-o-b-u](https://github.com/S-o-b-u) | UI/UX Design, Streamlit Interface, Bot Creation Wizard, Visual Identity |
+| **Shriparna Prasad** | Design Lead| [@S-h-r-i-p-a-r-n-a](https://github.com/S-h-r-i-p-a-r-n-a) |Created and managed the project's visual style, themes, and design system.|
+
+## 📧 Contact
+
+**Project Repository**: [https://github.com/gauravnetes/BotBlocks](https://github.com/gauravnetes/BotBlocks)
+
+For questions or collaborations:
+- **Gourav Chandra** - [@gauravnetes](https://github.com/gauravnetes)
+- **Souvik Rahut** - [@S-o-b-u](https://github.com/S-o-b-u)
+- **Shriparna Prasad** - [@S-h-r-i-p-a-r-n-a](https://github.com/S-h-r-i-p-a-r-n-a)
+
+---
+
+<div align="center">
+
+**⭐ Star this repo if you find it helpful!**
+
+Made with ❤️ for the no-code revolution
+
+</div>
