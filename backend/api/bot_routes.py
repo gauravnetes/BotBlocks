@@ -3,10 +3,12 @@ import shutil
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, BackgroundTasks
 from sqlalchemy.orm import Session
 from typing import List
+from fastapi.responses import RedirectResponse
 
 from db import crud, schemas
 from db.database import get_db
-from services import data_ingestion
+from services import data_ingestion, asset_manager
+
 
 router = APIRouter(
     prefix="/api/v1/bots",
@@ -34,11 +36,8 @@ def read_all_bots(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)
     bots = crud.get_bots(db, skip=skip, limit=limit)
     return bots
 
-# --- NEW: Background Upload Handler ---
 def process_upload_background(file_path: str, bot_id: str):
-    """
-    Background task wrapper.
-    """
+
     try:
         data_ingestion.ingest_file_from_path(file_path, bot_id)
     except Exception as e:
@@ -52,37 +51,37 @@ async def upload_knowledge(
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    """
-    Upload a PDF/TXT file. 
-    1. Saves file to disk immediately.
-    2. Starts ingestion in background.
-    3. Returns 'Success' immediately.
-    """
     # 1. Verify Bot Exists
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
 
+    asset = asset_manager(db, public_id)
+    if not asset:
+        raise HTTPException(status_code=500, detail="Failed to upload asset")
+    
     # 2. Save Temp File
     # Create temp directory
-    temp_dir = f"./data/temp/{public_id}"
-    os.makedirs(temp_dir, exist_ok=True)
+    # temp_dir = f"./data/temp/{public_id}"
+    # os.makedirs(temp_dir, exist_ok=True)
     
-    # Define full path
-    temp_file_path = f"{temp_dir}/{file.filename}"
+    # # Define full path
+    # temp_file_path = f"{temp_dir}/{file.filename}"
     
-    # Write bytes to disk
-    with open(temp_file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
+    # # Write bytes to disk
+    # with open(temp_file_path, "wb") as buffer:
+    #     shutil.copyfileobj(file.file, buffer)
 
     # 3. Queue Background Task
     background_tasks.add_task(
-        process_upload_background, 
-        temp_file_path, 
-        public_id
+        data_ingestion.ingest_from_url,         
+        public_id, 
+        asset.cloudinary_url, 
+        asset.filename
     )
 
-    return {"message": "File received! AI training started in the background."}
+    return {"message": "File uploaded to Cloud & Indexing started."}
+
 
 @router.delete("/{public_id}")
 def delete_existing_bot(public_id: str, db: Session = Depends(get_db)):
@@ -97,3 +96,62 @@ def delete_existing_bot(public_id: str, db: Session = Depends(get_db)):
     # but for a hackathon, leaving the vector files is safer to avoid "File Lock" crashes.
     
     return {"message": "Bot deleted successfully"}
+
+@router.get("/{public_id}/config")
+def get_bot_widget_config(public_id: str, db: Session = Depends(get_db)):
+    
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot: 
+        raise HTTPException(status_code=404, detail="Bot Not Found")
+    
+
+    return {
+        "bot_name": bot.name, 
+        "theme_color": bot.theme_color, 
+        "initiala_message": bot.initial_message, 
+        "bot_avatar": bot.bot_avatar
+    }
+    
+    
+@router.patch("/{public_id}/config", response_model=schemas.Bot)
+def update_bot_visuals(
+    public_id: str, 
+    config: schemas.BotConfigUpdate, 
+    db: Session = Depends(get_db)
+):
+    updated_bot = crud.update_bot_config(db, public_id, config)
+    if not updated_bot:
+        raise HTTPException(status_code=404, detail="Bot Not Found")
+    
+    return updated_bot
+
+@router.get("/{public_id}/files")
+def get_bot_files(public_id: str, db: Session = Depends(get_db)):
+    
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot Not Found")
+    
+    files = data_ingestion.list_bot_files(public_id)
+    return {"files": files}
+
+@router.delete("/{public_id}/files/{filename}")
+def delete_bot_file(public_id: str, filename: str, db: Session = Depends(get_db)):
+    
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot Not Found")
+    
+    success = data_ingestion.delete_bot_file(public_id, filename)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to delete File")
+    
+    return {"message": f"File {filename} deleted successfully"}
+
+@router.get("/{public_id}/files/{filename}/download")
+def download_file(public_id: str, filename: str, db: Session = Depends(get_db)):
+    url = asset_manager.get_asset_url(db, public_id, filename)
+    if not url:
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    return RedirectResponse(url)
