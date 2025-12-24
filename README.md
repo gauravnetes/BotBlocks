@@ -8,6 +8,28 @@
 
 BotBlocks is a modular, low-code chatbot builder that lets non-developers create sophisticated AI-powered chatbots by simply selecting pre-built functional blocks. Think of it as assembling LEGO blocks instead of writing code.
 
+## 📸 Screenshots
+
+### Landing Page
+<img width="1919" height="873" alt="Screenshot 2025-11-30 221658" src="https://github.com/user-attachments/assets/816f00ed-91c4-4d15-98f0-8d62675b5663" />
+
+*Clean, intuitive landing page with clear value proposition*
+
+### Bot Creation Wizard
+<img width="1913" height="873" alt="Screenshot 2025-11-30 221731" src="https://github.com/user-attachments/assets/a9c07a65-1ca0-406c-a3af-b7d742e40b34" />
+
+*8-step guided wizard - from welcome to deployment in minutes*
+
+### Dashboard
+<img width="1908" height="872" alt="Screenshot 2025-11-30 221817" src="https://github.com/user-attachments/assets/96f541fd-4266-456e-bd89-7e2105078899" />
+
+*Manage all your bots from one centralized dashboard*
+
+### Analytics & Admin
+<img width="1884" height="875" alt="Screenshot 2025-11-30 221834" src="https://github.com/user-attachments/assets/eb4b8a37-4384-40fc-a7e7-1212e67ee6b7" />
+
+*Monitor platform usage and bot activity in real-time*
+
 ## 🎯 The Problem
 
 Existing chatbot platforms fall into two extremes:
@@ -325,8 +347,9 @@ This project was built by a team of passionate developers:
 
 | Name | Role | GitHub | Contributions |
 |------|------|--------|---------------|
-| **Gourav Chandra** | Backend Developer | [@gauravnetes](https://github.com/gauravnetes) | RAG Engine, API Development, Vector DB Integration, LLM Pipeline |
-| **Souvik Rahut** | Frontend Developer | [@S-o-b-u](https://github.com/S-o-b-u) | UI/UX Design, Streamlit Interface, User Flow, Platform Integration |
+| **Gourav Chandra** | Backend Developer | [@gauravnetes](https://github.com/gauravnetes) | RAG Pipeline, FastAPI Architecture, Vector DB Integration, LLM Service |
+| **Souvik Rahut** | Frontend & Design Lead | [@S-o-b-u](https://github.com/S-o-b-u) | UI/UX Design, Streamlit Interface, Bot Creation Wizard, Visual Identity |
+| **Shriparna Prasad** | Design Lead| [@S-h-r-i-p-a-r-n-a](https://github.com/S-h-r-i-p-a-r-n-a) |Created and managed the project's visual style, themes, and design system.|
 
 ## 📧 Contact
 
@@ -335,6 +358,7 @@ This project was built by a team of passionate developers:
 For questions or collaborations:
 - **Gourav Chandra** - [@gauravnetes](https://github.com/gauravnetes)
 - **Souvik Rahut** - [@S-o-b-u](https://github.com/S-o-b-u)
+- **Shriparna Prasad** - [@S-h-r-i-p-a-r-n-a](https://github.com/S-h-r-i-p-a-r-n-a)
 
 ---
 
@@ -345,14 +369,3 @@ For questions or collaborations:
 Made with ❤️ for the no-code revolution
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
