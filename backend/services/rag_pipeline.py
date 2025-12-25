@@ -5,6 +5,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 from core.config import settings
 from db import models
 import os
@@ -188,3 +192,63 @@ def generate_response(message: str, bot: models.Bot, db: Session) -> str:
         if "404" in str(e):
             return "Error: Model not found. Check API key or Model Name."
         return f"I encountered an internal error: {str(e)}"
+    
+    
+def add_document_to_knowledge_base(bot_id: int, file_content: str, source_filename: str):
+    
+    print(f"RAG: Training bot {bot_id} with file: {source_filename}")
+    
+    try: 
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        
+        vector_store = Chroma(
+            persist_directory=CHROMA_PATH,
+            embedding_function=embeddings,
+            collection_name=f"collection_{bot_id}"
+        )
+        
+        raw_doc = Document(
+            page_content=file_content, 
+            metadata={"source": source_filename}
+        )
+        
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, 
+            chunk_overlap=100
+        )
+        
+        chunks = text_splitter.split_documents([raw_doc])
+        
+        print(f"Created {len(chunks)} chunks from {source_filename}")
+        
+        vector_store.add_documents(chunks)
+        
+        print(f"RAG: Training Complete")
+        return True
+    
+    except Exception as e:
+        print(f" RAG Error: {e}")
+        return False
+
+def remove_document_from_knowledge_base(bot_id: int, source_filename: str):
+    
+    print(f"RAG: Untraining bot {bot_id} (removing {source_filename})...")
+    
+    try:
+        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        vector_store = Chroma(
+            persist_directory=CHROMA_PATH,
+            embedding_function=embeddings,
+            collection_name=f"collection_{bot_id}"
+        )
+        
+        vector_store._collection.delete(
+            where={"source": source_filename}
+        )
+        
+        print(f"RAG: Removed knowledge derived from {source_filename}")
+        return True
+
+    except Exception as e:
+        print(f"RAG Delete Error: {e}")
+        return False
