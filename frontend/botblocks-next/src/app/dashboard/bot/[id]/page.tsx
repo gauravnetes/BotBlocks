@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import { getBot, chatWithBot, Bot, getWidgetConfig, updateWidgetConfig } from "@/lib/api";
-import { ArrowLeft, MessageSquare, Code, Settings as SettingsIcon, Send, Copy, Check, Palette } from "lucide-react";
+import { ArrowLeft, MessageSquare, Code, Settings as SettingsIcon, Send, Copy, Check, Palette, Book } from "lucide-react";
 import { WidgetCustomizer } from "@/components/dashboard/WidgetCustomizer";
 import { WidgetPreview } from "@/components/dashboard/WidgetPreview";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import KnowledgePage from "./knowledge/page";
+
 export default function BotDetailPage() {
   const params = useParams();
   const [bot, setBot] = useState<Bot | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "chat" | "embed" | "widget" | "settings">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "chat" | "embed" | "widget" | "settings" | "knowledge">("overview");
   const [widgetConfig, setWidgetConfig] = useState<any>(null);
   const [lastWidgetUpdate, setLastWidgetUpdate] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +82,7 @@ export default function BotDetailPage() {
         {[
           { id: "overview", icon: MessageSquare, label: "Overview" },
           { id: "chat", icon: MessageSquare, label: "Test Chat" },
+          { id: "knowledge", icon: Book, label: "Knowledge" },
           { id: "widget", icon: Palette, label: "Widget Theme" },
           { id: "embed", icon: Code, label: "Embed" },
           { id: "settings", icon: SettingsIcon, label: "Settings" },
@@ -172,6 +175,12 @@ export default function BotDetailPage() {
             </div>
           </div>
         )}
+
+        {/* KNOWLEDGE BASE */}
+        {activeTab === "knowledge" && (
+          <KnowledgePage />
+        )}
+
         {/* EMBED */}
         {activeTab === "embed" && (
           <div className="space-y-6 max-w-4xl">

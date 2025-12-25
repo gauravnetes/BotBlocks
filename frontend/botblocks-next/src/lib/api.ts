@@ -84,3 +84,40 @@ export async function updateWidgetConfig(public_id: string, config: any) {
   if (!res.ok) throw new Error("Failed to update widget config");
   return res.json();
 }
+
+
+// ===== Knowledge Base =====
+
+export async function getBotKnowledge(botId: string) {
+  const res = await fetch(`${API_URL}/api/v1/bots/${botId}/knowledge-base`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch knowledge base");
+  return res.json();
+}
+
+export async function uploadBotKnowledge(botId: string, file: File) {
+  const fd = new FormData();
+  fd.append("file", file);
+
+  const res = await fetch(
+    `${API_URL}/api/v1/bots/${botId}/knowledge-base/upload`,
+    {
+      method: "POST",
+      body: fd,
+    }
+  );
+
+  if (!res.ok) throw new Error("Failed to upload knowledge");
+  return res.json();
+}
+
+export async function deleteBotKnowledge(botId: string, filename: string) {
+  const res = await fetch(
+    `${API_URL}/api/v1/bots/${botId}/knowledge-base/${filename}`,
+    { method: "DELETE" }
+  );
+
+  if (!res.ok) throw new Error("Failed to delete knowledge");
+  return true;
+}

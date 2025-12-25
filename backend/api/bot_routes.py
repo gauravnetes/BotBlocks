@@ -148,13 +148,42 @@ def delete_bot_file(public_id: str, filename: str, db: Session = Depends(get_db)
     
     return {"message": f"File {filename} deleted successfully"}
 
+import requests
+from fastapi.responses import StreamingResponse
+
+import mimetypes
+
 @router.get("/{public_id}/files/{filename}/download")
-def download_file(public_id: str, filename: str, db: Session = Depends(get_db)):
+def download_file(public_id: str, filename: str, inline: bool = False, db: Session = Depends(get_db)):
     url = asset_manager.get_asset_url(db, public_id, filename)
     if not url:
         raise HTTPException(status_code=404, detail="File not found")
     
-    return RedirectResponse(url)
+    # Proxy the download to set headers
+    try:
+        r = requests.get(url, stream=True)
+        r.raise_for_status()
+        
+        disposition = "inline" if inline else "attachment"
+        
+        # Explicitly guess mime type to force browser preview
+        content_type, _ = mimetypes.guess_type(filename)
+        if not content_type:
+            content_type = r.headers.get("Content-Type", "application/octet-stream")
+            
+        # Force text/plain for .txt/md files to ensure they display
+        if filename.endswith(".txt") or filename.endswith(".md"):
+             content_type = "text/plain"
+        
+        return StreamingResponse(
+            r.iter_content(chunk_size=1024),
+            media_type=content_type,
+            headers={"Content-Disposition": f'{disposition}; filename="{filename}"'}
+        )
+    except Exception as e:
+        print(f"Proxy download failed: {e}")
+        # Fallback to redirect if proxy fails
+        return RedirectResponse(url)
 
 # ===== WIDGET CONFIGURATION ENDPOINTS =====
 

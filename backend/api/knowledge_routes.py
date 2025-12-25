@@ -11,14 +11,15 @@ import logging
 
 logger = logging.getLogger("KnowledgeRouter")
 
-router = APIRouter(prefix="/bots", tags=["Knowledge Base"])
+router = APIRouter(prefix="/api/v1/bots", tags=["Knowledge Base"])
 
 @router.post("/{bot_id}/knowledge-base/upload")
-async def upload_knowledge(bot_id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_knowledge(bot_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
     
-    bot = db.query(models.Bot).filter(models.Bot.id == bot_id).first()
+    bot = db.query(models.Bot).filter(models.Bot.public_id == bot_id).first()
     if not bot: raise HTTPException(404, "Bot Not Found")
     
+    # We pass the public_id (bot_id) to asset_manager
     asset = asset_manager.upload_asset(db, bot_id, file)
     if not asset:
         raise HTTPException(500, "Failed to Upload Asset")
@@ -64,15 +65,22 @@ async def upload_knowledge(bot_id: int, file: UploadFile = File(...), db: Sessio
 
 
 @router.get("/{bot_id}/knowledge-base")
-def list_knowledge(bot_id: int, db: Session = Depends(get_db)):
-    files = asset_manager.list_assets(db, str(bot_id))
+def list_knowledge(bot_id: str, db: Session = Depends(get_db)):
+    # Verify bot exists
+    bot = db.query(models.Bot).filter(models.Bot.public_id == bot_id).first()
+    if not bot: raise HTTPException(404, "Bot Not Found")
+
+    files = asset_manager.list_assets(db, bot_id)
     return {"files": files}
 
 
 @router.delete("/{bot_id}/knowledge-base/{filename}")
-def delete_knowledge(bot_id: int, filename: str, db: Session = Depends(get_db)):
+def delete_knowledge(bot_id: str, filename: str, db: Session = Depends(get_db)):
     
-    success = asset_manager.delete_asset(db, str(bot_id), filename)
+    bot = db.query(models.Bot).filter(models.Bot.public_id == bot_id).first()
+    if not bot: raise HTTPException(404, "Bot Not Found")
+
+    success = asset_manager.delete_asset(db, bot_id, filename)
     if not success:
         raise HTTPException(404, "File not found")
         
