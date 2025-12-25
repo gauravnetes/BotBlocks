@@ -113,10 +113,6 @@ def generate_response(message: str, bot: models.Bot, db: Session) -> str:
             transport="rest"
         )
         
-        retriever = vector_store.as_retriever(search_kwargs={"k": 3})
-        docs = retriever.invoke(message)
-        
-        context_text = "\n\n".join()
 
         # Handle Empty DB Case
         if doc_count == 0:
@@ -168,7 +164,7 @@ def generate_response(message: str, bot: models.Bot, db: Session) -> str:
             audit_entry = models.BotAuditLog(
                 bot_id = bot.id, 
                 user_query = message, 
-                bot_res = final_ans, 
+                bot_response = final_ans, 
                 confidence_score = metadata.get('confidence', 0.0), 
                 flagged_as_gap = metadata.get('flagged_as_gap', False)
             )

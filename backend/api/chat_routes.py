@@ -46,7 +46,8 @@ def chat_with_bot(
     try: 
         ans = rag_pipeline.generate_response(
             message=chat_request.message, 
-            bot=bot
+            bot=bot,
+            db=db
         )
         
     except Exception as e:
