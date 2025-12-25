@@ -6,11 +6,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
+from api import analytics
 
 from db import models
 from db.database import engine
 
-from api import bot_routes, chat_routes
+from api import bot_routes, chat_routes, analytics
 
 if not os.path.exists('./data'):
     os.makedirs('./data')
@@ -39,6 +40,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(bot_routes.router)
 app.include_router(chat_routes.router)
+app.include_router(analytics.router)
 
 @app.get("/api/v1/health")
 def get_health():
