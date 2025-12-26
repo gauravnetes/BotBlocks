@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 from db import models
 # Import your existing asset manager
-from services import asset_manager
+from services import asset_manager, data_ingestion
 # Import RAG service to process the file content
 from services import rag_pipeline 
 import requests
@@ -86,8 +86,63 @@ def list_knowledge(
     if bot.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    files = asset_manager.list_assets(db, bot_id)
-    return {"files": files}
+    # 1. Get DB Assets (Files)
+    db_files = asset_manager.list_assets(db, bot_id)
+    
+    # 2. Get Chroma Sources (Web Types)
+    chroma_sources = data_ingestion.list_bot_files(bot_id)
+    
+    final_list = list(db_files)
+    
+    # 3. Merge & Group Web Sources by Domain
+    from urllib.parse import urlparse
+    domain_groups = {}
+    
+    for src in chroma_sources:
+        if src.get("type") == "web":
+            url = src.get("url", "")
+            if not url: continue
+            
+            domain = urlparse(url).netloc
+            if domain not in domain_groups:
+                domain_groups[domain] = []
+            domain_groups[domain].append(src)
+            
+    # Add standardized entries for each domain
+    for domain, items in domain_groups.items():
+        # Find the "Root" item (shortest URL usually implies root)
+        # Prefer the one matching the domain exactly if exists
+        root_item = next((i for i in items if urlparse(i.get("url")).path in ["", "/"]), None)
+        if not root_item:
+            root_item = min(items, key=lambda x: len(x.get("url", "")))
+            
+        # Construct Base URL
+        parsed_root = urlparse(root_item.get("url", ""))
+        base_url = f"{parsed_root.scheme}://{parsed_root.netloc}"
+
+        count = len(items)
+        
+        # Determine Title
+        # If title is generic "Untitled", use the domain name for clarity
+        title = root_item.get("title")
+        if not title or title.lower() == "untitled":
+             title = domain
+
+        label = title
+        if count > 1:
+            label = f"{label} ({count} pages)"
+            
+        final_list.append({
+            "id": base_url, # Use Base URL as ID
+            "filename": label,
+            "file_type": "web",
+            "file_size": 0,
+            "cloudinary_url": base_url, # Point to main site
+            "uploaded_at": root_item.get("scraped_at"),
+            "type": "web"
+        })
+            
+    return {"files": final_list}
 
 
 @router.delete("/{bot_id}/knowledge-base/{filename}")

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createBot, uploadFile, updateWidgetConfig } from "@/lib/api";
+import { createBot, uploadFile, updateWidgetConfig, scrapeWebsiteAsync } from "@/lib/api";
 import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,11 +25,12 @@ export default function CreateBotWizard() {
   const [platformToken, setPlatformToken] = useState("");
   const [theme, setTheme] = useState<"modern" | "classic" | "minimal">("modern");
   const [welcomeMessage, setWelcomeMessage] = useState("Hello! How can I help you today?");
+  const [websiteUrl, setWebsiteUrl] = useState("");
 
   const handleCreate = async () => {
     setIsLoading(true);
     try {
-      const token = await getToken();
+      let token = await getToken();
 
       // 1. Determine System Prompt
       let systemPrompt = "You are a helpful assistant.";
@@ -46,14 +47,30 @@ export default function CreateBotWizard() {
         platform_token: platformToken,
       }, token);
 
-      // 3. Upload Files (if RAG)
-      if (type === "rag" && files.length > 0) {
-        for (const file of files) {
-          await uploadFile(newBot.public_id, file, token);
+      // 3. Upload Files & Scrape (if RAG)
+      if (type === "rag") {
+        if (files.length > 0) {
+          for (const file of files) {
+            await uploadFile(newBot.public_id, file, token);
+          }
+        }
+
+        // 3b. Trigger Web Scraping
+        if (websiteUrl) {
+          toast.info("Starting website scraping in background...");
+          try {
+            await scrapeWebsiteAsync(newBot.public_id, websiteUrl, "crawl", token);
+            toast.success("Scraping started. It will continue in the background.");
+          } catch (e) {
+            console.error("Scraping failed", e);
+            toast.error("Failed to start scraping, but bot created.");
+          }
         }
       }
 
       // 4. Update Widget Config
+      // Refresh token before widget config update to ensure it hasn't expired
+      token = await getToken();
       await updateWidgetConfig(newBot.public_id, {
         theme,
         welcome_message: welcomeMessage,
@@ -180,7 +197,9 @@ export default function CreateBotWizard() {
               {type === "rag" ? (
                 <div>
                   <h2 className="text-xl font-bold text-white mb-4">Upload Knowledge</h2>
-                  <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-blue-500/50 transition-colors">
+
+                  {/* File Upload */}
+                  <div className="border-2 border-dashed border-white/10 rounded-xl p-8 text-center hover:border-blue-500/50 transition-colors mb-6">
                     <Upload className="w-10 h-10 text-zinc-500 mx-auto mb-4" />
                     <p className="text-zinc-400 mb-4">Drag and drop PDF or TXT files here</p>
                     <input
@@ -192,7 +211,7 @@ export default function CreateBotWizard() {
                     />
                   </div>
                   {files.length > 0 && (
-                    <div className="mt-4 space-y-2">
+                    <div className="mt-4 space-y-2 mb-6">
                       {files.map((f, i) => (
                         <div key={i} className="flex items-center gap-2 text-sm text-zinc-300 bg-white/5 p-2 rounded">
                           <FileText className="w-4 h-4" /> {f.name}
@@ -200,6 +219,24 @@ export default function CreateBotWizard() {
                       ))}
                     </div>
                   )}
+
+                  {/* URL Input */}
+                  <div className="bg-zinc-900/50 p-4 rounded-xl border border-white/5">
+                    <label className="block text-sm font-medium text-zinc-400 mb-2">Website to Scrape (Optional)</label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Globe className="absolute left-3 top-3 w-5 h-5 text-zinc-500" />
+                        <input
+                          type="url"
+                          value={websiteUrl}
+                          onChange={(e) => setWebsiteUrl(e.target.value)}
+                          className="w-full bg-zinc-900 border border-white/10 rounded-lg pl-10 p-3 text-white focus:outline-none focus:border-blue-500"
+                          placeholder="https://example.com"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-zinc-500 mt-2">We will crawl up to 50 pages from this website.</p>
+                  </div>
                 </div>
               ) : (
                 <div>
@@ -279,7 +316,7 @@ export default function CreateBotWizard() {
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 text-center">
                   <Globe className="w-12 h-12 text-blue-500 mx-auto mb-4" />
                   <h3 className="text-white font-bold mb-2">No Configuration Needed</h3>
-                  <p className="text-zinc-400">You'll get an embed code after creating the bot.</p>
+                  <p className="text-zinc-400">You&apos;ll get an embed code after creating the bot.</p>
                 </div>
               ) : (
                 <div>

@@ -76,7 +76,7 @@ export default function AnalyticsView({ botId }: AnalyticsViewProps) {
         setIsSubmitting(true);
         try {
             const token = await getToken();
-            const result = await resolveGap(botId, resolvingQuery, resolutionAnswer, undefined); // Assuming logId is optional/undefined here based on usage
+            const result = await resolveGap(botId, resolvingQuery, resolutionAnswer, undefined, token);
             toast.success("Knowledge added & gap resolved!");
 
             // Close modal

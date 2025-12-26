@@ -14,12 +14,16 @@ export interface Bot {
 }
 
 export interface Asset {
-  id: number;
-  filename: string;
+  id: number | string; // unified: number for files, URL string for web
+  filename: string; // name or title
+  type?: "file" | "web";
   file_type: string;
   file_size: number;
   cloudinary_url: string;
   uploaded_at: string;
+  // Web specific (optional)
+  url?: string;
+  title?: string;
 }
 
 export interface BotCreate {
@@ -226,5 +230,85 @@ export async function resolveGap(botId: string, query: string, answer: string, l
   });
 
   if (!res.ok) throw new Error("Failed to resolve gap");
+  return res.json();
+}
+
+// ===== Web Scraping =====
+
+export interface ScrapeResult {
+  success: boolean;
+  message?: string;
+  url?: string;
+  title?: string;
+  content_length?: number;
+  results?: {
+    total_urls: number;
+    successful: number;
+    failed: number;
+    pages: any[];
+  }
+}
+
+export async function scrapeSingleUrl(botId: string, url: string, token?: string | null): Promise<ScrapeResult> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/v1/bots/${botId}/scrape/single`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ url }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Scraping failed" }));
+    throw new Error(error.detail || "Scraping failed");
+  }
+  return res.json();
+}
+
+export async function scrapeWebsite(botId: string, startUrl: string, method: "sitemap" | "crawl" | "single" = "sitemap", token?: string | null): Promise<ScrapeResult> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/v1/bots/${botId}/scrape/website`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ start_url: startUrl, method, max_pages: 50, max_depth: 2 }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Scraping failed" }));
+    throw new Error(error.detail || "Scraping failed");
+  }
+  return res.json();
+}
+
+export async function scrapeWebsiteAsync(botId: string, startUrl: string, method: "sitemap" | "crawl" | "single" = "sitemap", token?: string | null): Promise<ScrapeResult> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/v1/bots/${botId}/scrape/website/async`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ start_url: startUrl, method, max_pages: 100, max_depth: 3 }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ detail: "Scraping failed" }));
+    throw new Error(error.detail || "Scraping failed");
+  }
+  return res.json();
+}
+
+export async function previewWebsiteScraping(botId: string, url: string, token?: string | null) {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/v1/bots/${botId}/scrape/preview?url=${encodeURIComponent(url)}`, {
+    cache: "no-store",
+    headers
+  });
+
+  if (!res.ok) throw new Error("Failed to preview");
   return res.json();
 }
