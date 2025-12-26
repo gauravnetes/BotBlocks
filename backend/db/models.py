@@ -28,15 +28,13 @@ class Bot(Base):
     
     name = Column(String, default="My Bot")
     system_prompt = Column(Text, default="You are a helpful assistant.")
+    bot_type = Column(String, default="rag") # rag, persona
     
     platform = Column(String) 
     platform_token = Column(String, nullable=True)
     allowed_origin = Column(String, default="*")
     
     # widget appearance (legacy fields - keeping for backwards compatibility)
-    # theme_color = Column(String, default="#0f766e")
-    # initial_message = Column(Text, default = "Hello! How can I help you today?")
-    # bot_avatar = Column(String, default="🤖")
     
     # New widget configuration (JSON)
     widget_config = Column(Text, default='{"theme": "modern", "primary_color": "#3b82f6", "avatar_url": null, "welcome_message": "Hello! How can I help you today?", "bot_display_name": null, "position": "bottom-right", "button_style": "circle"}')
@@ -77,6 +75,7 @@ class BotAuditLog(Base):
     confidence_score = Column(Float)
     
     flagged_as_gap = Column(Boolean, default=False)
+    is_resolved = Column(Boolean, default=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

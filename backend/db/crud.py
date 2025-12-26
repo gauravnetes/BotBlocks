@@ -17,6 +17,7 @@ def create_bot(db: Session, bot: schemas.BotCreate):
     db_bot = models.Bot(
         public_id = public_id, 
         name = bot.name,
+        bot_type = bot.bot_type,
         system_prompt = bot.system_prompt, 
         platform = bot.platform, 
         platform_token = bot.platform_token, 

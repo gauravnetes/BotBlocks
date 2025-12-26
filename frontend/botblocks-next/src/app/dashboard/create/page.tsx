@@ -5,6 +5,7 @@ import { createBot, uploadFile, updateWidgetConfig } from "@/lib/api";
 import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export default function CreateBotWizard() {
   const router = useRouter();
@@ -35,6 +36,7 @@ export default function CreateBotWizard() {
       // 2. Create Bot
       const newBot = await createBot({
         name,
+        bot_type: type,
         system_prompt: systemPrompt,
         platform: platform,
         platform_token: platformToken,
@@ -54,11 +56,14 @@ export default function CreateBotWizard() {
       });
 
       // 5. Redirect
+      toast.success(`Bot "${name}" created successfully!`);
       router.push("/dashboard");
       router.refresh();
 
     } catch (error) {
-      alert("Failed to create bot. Check console.");
+      toast.error("Failed to create bot", {
+        description: "Please check the debug console for more details."
+      });
       console.error(error);
       setIsLoading(false);
     }
@@ -313,8 +318,8 @@ export default function CreateBotWizard() {
                       key={t}
                       onClick={() => setTheme(t)}
                       className={`p-6 rounded-xl border transition-all ${theme === t
-                          ? 'bg-blue-600/20 border-blue-500'
-                          : 'bg-zinc-900 border-white/10 hover:border-white/20'
+                        ? 'bg-blue-600/20 border-blue-500'
+                        : 'bg-zinc-900 border-white/10 hover:border-white/20'
                         }`}
                     >
                       <div className="text-3xl mb-3">
