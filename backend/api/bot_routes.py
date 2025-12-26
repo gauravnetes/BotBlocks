@@ -56,7 +56,7 @@ async def upload_knowledge(
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
 
-    asset = asset_manager(db, public_id)
+    asset = asset_manager.upload_asset(db, public_id, file)
     if not asset:
         raise HTTPException(status_code=500, detail="Failed to upload asset")
     
@@ -241,7 +241,7 @@ def update_widget_configuration(
         current_config = {}
     
     # Update only provided fields
-    update_data = config.dict(exclude_unset=True)
+    update_data = config.model_dump(exclude_unset=True)
     current_config.update(update_data)
     
     # Save back as JSON string

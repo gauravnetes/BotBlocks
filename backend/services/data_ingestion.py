@@ -95,25 +95,40 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
         doc.metadata["bot_id"] = bot_id
 
     # 4. Embed & Store
-    print("Generating embeddings locally (CPU)...")
+    print("Generating embeddings with BGE-small model...")
     try:           
-        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        # Using BGE-small for better accuracy
+        embeddings = HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
         
-        # Batch size 50 is safe for most CPUs
+        collection_name = f"collection_{bot_id}"
+        
+        # ✅ CRITICAL FIX: Get or create collection with cosine similarity FIRST
+        vector_store = Chroma(
+            persist_directory=CHROMA_PATH,
+            embedding_function=embeddings,
+            collection_name=collection_name,
+            collection_metadata={"hnsw:space": "cosine"}  # ← THIS WAS MISSING!
+        )
+        
+        # Now add documents in batches
         BATCH_SIZE = 50 
         
         for i in range(0, len(chunks), BATCH_SIZE):
             batch = chunks[i : i + BATCH_SIZE]
-            Chroma.from_documents(
-                documents=batch,
-                embedding=embeddings,
-                persist_directory=CHROMA_PATH,
-                collection_name=f"collection_{bot_id}"
-            )
+            
+            # ✅ Use add_documents instead of from_documents
+            vector_store.add_documents(batch)
+            
             print(f"Processed batch {i} to {i + len(batch)}")
             
     except Exception as e:
         print(f"❌ ChromaDB Error: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
     # Note: ingest_from_url handles its own cleanup, but this is a safety net
@@ -132,11 +147,16 @@ def list_bot_files(bot_id: str):
     Returns unique filenames stored in the vector database.
     """
     try:
-        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        embeddings = HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
         vector_store = Chroma(
             persist_directory=CHROMA_PATH, 
             embedding_function=embeddings, 
-            collection_name=f"collection_{bot_id}"
+            collection_name=f"collection_{bot_id}",
+            collection_metadata={"hnsw:space": "cosine"}  # ✅ Added
         )
         
         # Get metadata
@@ -158,12 +178,17 @@ def delete_bot_file(bot_id: str, filename: str):
     Deletes all vectors associated with a specific file.
     """
     try:
-        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        embeddings = HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
         
         vector_store = Chroma(
             persist_directory=CHROMA_PATH, 
             embedding_function=embeddings, 
-            collection_name=f"collection_{bot_id}"
+            collection_name=f"collection_{bot_id}",
+            collection_metadata={"hnsw:space": "cosine"}  # ✅ Added
         )
         
         print(f"🗑️ Deleting vectors for file: {filename}")
