@@ -54,6 +54,7 @@ class BotAuditLog(Base):
     confidence_score = Column(Float)
     
     flagged_as_gap = Column(Boolean, default=False)
+    is_resolved = Column(Boolean, default=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

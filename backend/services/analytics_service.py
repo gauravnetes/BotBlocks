@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func, desc
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import json
 import logging
 import re
@@ -37,7 +37,7 @@ def update_bot_health_if_needed(bot_id: int, db: Session) -> float:
     
     # Check cache (24-hour TTL)
     if bot.last_health_check_at:
-        hours_since = (datetime.now() - bot.last_health_check_at).total_seconds() / 3600
+        hours_since = (datetime.now(timezone.utc) - bot.last_health_check_at).total_seconds() / 3600
         if hours_since < 24:
             logger.info(f"Using cached health score: {bot.health_score}")
             return bot.health_score
@@ -45,7 +45,7 @@ def update_bot_health_if_needed(bot_id: int, db: Session) -> float:
     logger.info(f"Recalculating health score for bot {bot_id}")
     
     # Get queries from last 7 days
-    week_ago = datetime.now() - timedelta(days=7)
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
     
     total_queries = db.query(func.count(models.BotAuditLog.id))\
         .filter(models.BotAuditLog.bot_id == bot_id)\
@@ -59,6 +59,7 @@ def update_bot_health_if_needed(bot_id: int, db: Session) -> float:
         gaps = db.query(func.count(models.BotAuditLog.id))\
             .filter(models.BotAuditLog.bot_id == bot_id)\
             .filter(models.BotAuditLog.flagged_as_gap == True)\
+            .filter(models.BotAuditLog.is_resolved == False)\
             .filter(models.BotAuditLog.created_at >= week_ago)\
             .scalar()
         
@@ -68,7 +69,7 @@ def update_bot_health_if_needed(bot_id: int, db: Session) -> float:
     
     # Update cache
     bot.health_score = new_score
-    bot.last_health_check_at = datetime.now()
+    bot.last_health_check_at = datetime.now(timezone.utc)
     db.commit()
     
     return new_score
@@ -80,7 +81,7 @@ def get_knowledge_gap_stats(bot_id: int, db: Session, days: int = 7) -> Dict[str
     """
     Returns comprehensive knowledge gap statistics.
     """
-    cutoff_date = datetime.now() - timedelta(days=days)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=days)
     
     # Total queries in period
     total_queries = db.query(func.count(models.BotAuditLog.id))\
@@ -92,6 +93,7 @@ def get_knowledge_gap_stats(bot_id: int, db: Session, days: int = 7) -> Dict[str
     failed_queries = db.query(func.count(models.BotAuditLog.id))\
         .filter(models.BotAuditLog.bot_id == bot_id)\
         .filter(models.BotAuditLog.flagged_as_gap == True)\
+        .filter(models.BotAuditLog.is_resolved == False)\
         .filter(models.BotAuditLog.created_at >= cutoff_date)\
         .scalar()
     
@@ -158,7 +160,7 @@ async def get_smart_insights(bot_id: int, db: Session, force_refresh: bool = Fal
     
     # Check cache (24-hour TTL)
     if not force_refresh and bot.last_insight_at and bot.cached_insight_summary:
-        hours_since = (datetime.now() - bot.last_insight_at).total_seconds() / 3600
+        hours_since = (datetime.now(timezone.utc) - bot.last_insight_at).total_seconds() / 3600
         if hours_since < 24:
             try:
                 cached_data = json.loads(bot.cached_insight_summary)
@@ -170,11 +172,12 @@ async def get_smart_insights(bot_id: int, db: Session, force_refresh: bool = Fal
     logger.info(f"Running AI Analyst Engine for Bot {bot_id}")
     
     # Get failed queries from last 30 days
-    cutoff_date = datetime.now() - timedelta(days=30)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
     
     logs = db.query(models.BotAuditLog)\
         .filter(models.BotAuditLog.bot_id == bot_id)\
         .filter(models.BotAuditLog.flagged_as_gap == True)\
+        .filter(models.BotAuditLog.is_resolved == False)\
         .filter(models.BotAuditLog.created_at >= cutoff_date)\
         .order_by(models.BotAuditLog.created_at.desc())\
         .limit(50)\
@@ -183,7 +186,7 @@ async def get_smart_insights(bot_id: int, db: Session, force_refresh: bool = Fal
     if not logs:
         logger.info("No knowledge gaps found - bot is performing well")
         bot.cached_insight_summary = "[]"
-        bot.last_insight_at = datetime.now()
+        bot.last_insight_at = datetime.now(timezone.utc)
         db.commit()
         return []
     
@@ -196,7 +199,7 @@ async def get_smart_insights(bot_id: int, db: Session, force_refresh: bool = Fal
     if not valid_queries:
         logger.info("All failed queries were spam/irrelevant")
         bot.cached_insight_summary = "[]"
-        bot.last_insight_at = datetime.now()
+        bot.last_insight_at = datetime.now(timezone.utc)
         db.commit()
         return []
     
@@ -268,7 +271,7 @@ Respond with valid JSON only."""
         
         # Cache results
         bot.cached_insight_summary = cleaned_json
-        bot.last_insight_at = datetime.now()
+        bot.last_insight_at = datetime.now(timezone.utc)
         db.commit()
         
         return data
@@ -290,6 +293,7 @@ def get_recent_knowledge_gaps(bot_id: int, db: Session, limit: int = 20) -> List
     logs = db.query(models.BotAuditLog)\
         .filter(models.BotAuditLog.bot_id == bot_id)\
         .filter(models.BotAuditLog.flagged_as_gap == True)\
+        .filter(models.BotAuditLog.is_resolved == False)\
         .order_by(models.BotAuditLog.created_at.desc())\
         .limit(limit)\
         .all()
@@ -312,7 +316,7 @@ def get_top_failed_queries(bot_id: int, db: Session, limit: int = 10) -> List[Di
     Returns most frequently asked questions that failed.
     Helps prioritize what knowledge to add first.
     """
-    cutoff_date = datetime.now() - timedelta(days=30)
+    cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
     
     # Group by similar queries (exact match for now)
     results = db.query(
@@ -321,6 +325,7 @@ def get_top_failed_queries(bot_id: int, db: Session, limit: int = 10) -> List[Di
     )\
         .filter(models.BotAuditLog.bot_id == bot_id)\
         .filter(models.BotAuditLog.flagged_as_gap == True)\
+        .filter(models.BotAuditLog.is_resolved == False)\
         .filter(models.BotAuditLog.created_at >= cutoff_date)\
         .group_by(models.BotAuditLog.user_query)\
         .order_by(desc('count'))\
@@ -346,5 +351,5 @@ async def get_comprehensive_insights(bot_id: int, db: Session) -> Dict[str, Any]
         "ai_insights": await get_smart_insights(bot_id, db),
         "recent_gaps": get_recent_knowledge_gaps(bot_id, db, limit=10),
         "top_failed_queries": get_top_failed_queries(bot_id, db, limit=10),
-        "generated_at": datetime.now().isoformat()
+        "generated_at": datetime.now(timezone.utc).isoformat()
     }
