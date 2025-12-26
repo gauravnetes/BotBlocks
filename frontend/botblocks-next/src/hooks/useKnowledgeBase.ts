@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
-import {
-  getBotKnowledge,
-  uploadBotKnowledge,
-  deleteBotKnowledge,
-} from "@/lib/api";
+import { Asset, getBotKnowledge, uploadBotKnowledge, deleteBotKnowledge } from "@/lib/api";
 
 export function useKnowledgeBase(botId: string) {
-  const [files, setFiles] = useState<string[]>([]);
+  const [files, setFiles] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchFiles = async () => {
@@ -23,7 +19,7 @@ export function useKnowledgeBase(botId: string) {
 
   const removeFile = async (filename: string) => {
     await deleteBotKnowledge(botId, filename);
-    setFiles((prev) => prev.filter((f) => f !== filename));
+    setFiles((prev) => prev.filter((f) => f.filename !== filename));
   };
 
   useEffect(() => {

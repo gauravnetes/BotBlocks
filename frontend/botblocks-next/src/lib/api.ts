@@ -13,6 +13,15 @@ export interface Bot {
   last_health_check_at?: string;
 }
 
+export interface Asset {
+  id: number;
+  filename: string;
+  file_type: string;
+  file_size: number;
+  cloudinary_url: string;
+  uploaded_at: string;
+}
+
 export interface BotCreate {
   name: string;
   bot_type: "rag" | "persona";
@@ -93,7 +102,7 @@ export async function updateWidgetConfig(public_id: string, config: any) {
 
 // ===== Knowledge Base =====
 
-export async function getBotKnowledge(botId: string) {
+export async function getBotKnowledge(botId: string): Promise<{ files: Asset[] }> {
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/knowledge-base`, {
     cache: "no-store",
   });

@@ -1,10 +1,10 @@
 import { FileText, Trash2, Eye, DownloadCloud } from "lucide-react";
-import { API_URL } from "@/lib/api";
+import { API_URL, Asset } from "@/lib/api";
 import { useState } from "react";
 import { FilePreviewModal } from "./FilePreviewModal";
 
 interface KnowledgeListProps {
-    files: string[];
+    files: Asset[];
     onDelete: (filename: string) => void;
     botId: string;
 }
@@ -32,7 +32,7 @@ export function KnowledgeList({ files, onDelete, botId }: KnowledgeListProps) {
             <div className="space-y-3">
                 {files.map((file) => (
                     <div
-                        key={file}
+                        key={file.id}
                         className="group flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-zinc-700 transition-colors"
                     >
                         <div className="flex items-center gap-3">
@@ -40,15 +40,19 @@ export function KnowledgeList({ files, onDelete, botId }: KnowledgeListProps) {
                                 <FileText className="w-4 h-4 text-blue-400" />
                             </div>
                             <div>
-                                <p className="text-sm font-medium text-white">{file}</p>
-                                <p className="text-xs text-zinc-500">Ready to use</p>
+                                <p className="text-sm font-medium text-white">{file.filename}</p>
+                                <div className="flex items-center gap-2 text-xs text-zinc-500">
+                                    <span>{(file.file_size / 1024).toFixed(1)} KB</span>
+                                    <span>•</span>
+                                    <span>{new Date(file.uploaded_at).toLocaleDateString()}</span>
+                                </div>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                             {/* Preview Button */}
                             <button
-                                onClick={() => setPreviewFile(file)}
+                                onClick={() => setPreviewFile(file.filename)}
                                 className="p-2 text-zinc-500 hover:text-blue-400 hover:bg-blue-400/10 rounded-lg transition-all"
                                 title="Preview file"
                             >
@@ -57,7 +61,7 @@ export function KnowledgeList({ files, onDelete, botId }: KnowledgeListProps) {
 
                             {/* Download Button */}
                             <a
-                                href={getDownloadUrl(file)}
+                                href={getDownloadUrl(file.filename)}
                                 className="p-2 text-zinc-500 hover:text-green-400 hover:bg-green-400/10 rounded-lg transition-all"
                                 title="Download file"
                             >
@@ -68,7 +72,7 @@ export function KnowledgeList({ files, onDelete, botId }: KnowledgeListProps) {
                             <button
                                 onClick={() => {
                                     if (window.confirm("Are you sure you want to delete this knowledge? The bot will forget this content immediately.")) {
-                                        onDelete(file);
+                                        onDelete(file.filename);
                                     }
                                 }}
                                 className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
