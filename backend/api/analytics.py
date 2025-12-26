@@ -8,6 +8,7 @@ from datetime import datetime
 from db.database import get_db
 from db import models, crud
 from services import analytics_service
+from api.deps import get_current_user
 
 logger = logging.getLogger("BotAnalytics")
 router = APIRouter(prefix="/api/v1/bots", tags=["analytics"])
@@ -27,12 +28,14 @@ class KnowledgeGapStatsResponse(BaseModel):
     period_days: int
 
 # ============================================================================
-# HELPER: Get Bot ID by Public ID
+# HELPER: Get Bot ID by Public ID with Auth Check
 # ============================================================================
-def get_bot_id(public_id: str, db: Session) -> int:
+def get_bot_id_with_auth(public_id: str, db: Session, current_user: models.User) -> int:
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     return bot.id
 
 # ============================================================================
@@ -41,12 +44,13 @@ def get_bot_id(public_id: str, db: Session) -> int:
 @router.get("/{public_id}/analytics/comprehensive")
 async def get_comprehensive_analytics(
     public_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Get all analytics data in one call.
     """
-    bot_id = get_bot_id(public_id, db)
+    bot_id = get_bot_id_with_auth(public_id, db, current_user)
     try:
         data = await analytics_service.get_comprehensive_insights(bot_id, db)
         return data  # Return directly to match frontend interface
@@ -60,12 +64,13 @@ async def get_comprehensive_analytics(
 @router.post("/{public_id}/analytics/refresh-insights")
 async def refresh_insights(
     public_id: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Force refresh AI insights.
     """
-    bot_id = get_bot_id(public_id, db)
+    bot_id = get_bot_id_with_auth(public_id, db, current_user)
     try:
         # We await this synchronously for the "Refersh" button experience, 
         # or we could make it BG task. 
@@ -89,9 +94,10 @@ async def refresh_insights(
 def get_gap_stats(
     public_id: str,
     days: int = 7,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
-    bot_id = get_bot_id(public_id, db)
+    bot_id = get_bot_id_with_auth(public_id, db, current_user)
     stats = analytics_service.get_knowledge_gap_stats(bot_id, db, days=days)
     return stats
 
@@ -108,7 +114,8 @@ async def resolve_gap(
     public_id: str,
     request: ResolveGapRequest,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Resolve a knowledge gap by adding a Q&A pair and marking logs as resolved.
@@ -116,6 +123,9 @@ async def resolve_gap(
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
+    
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
         
     try:
         # 1. Add to Knowledge Base (RAG)

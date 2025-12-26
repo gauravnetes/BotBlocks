@@ -5,6 +5,7 @@ from typing import Literal
 from db.database import get_db
 from db import models
 from services.web_scraping_service import WebScrapingService
+from api.deps import get_current_user
 
 router = APIRouter(prefix="/api/v1/bots", tags=["Web Scraping"])
 
@@ -28,11 +29,19 @@ class WebsiteScrapeRequest(BaseModel):
 def scrape_single_url(
     bot_id: int,
     request: SingleURLScrapeRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Scrape a single URL and add to bot's knowledge base
     """
+    # Verify ownership
+    bot = db.query(models.Bot).filter(models.Bot.id == bot_id).first()
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot not found")
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
     result = WebScrapingService.scrape_single_url(
         bot_id=bot_id,
         url=str(request.url),
@@ -48,11 +57,19 @@ def scrape_single_url(
 def scrape_website(
     bot_id: int,
     request: WebsiteScrapeRequest,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Scrape entire website using specified method
     """
+    # Verify ownership
+    bot = db.query(models.Bot).filter(models.Bot.id == bot_id).first()
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot not found")
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
     result = WebScrapingService.scrape_website(
         bot_id=bot_id,
         start_url=str(request.start_url),
@@ -72,7 +89,8 @@ def scrape_website_async(
     bot_id: int,
     request: WebsiteScrapeRequest,
     background_tasks: BackgroundTasks,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Scrape website in background (for large sites)
@@ -80,6 +98,9 @@ def scrape_website_async(
     bot = db.query(models.Bot).filter(models.Bot.id == bot_id).first()
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
+    
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     
     background_tasks.add_task(
         WebScrapingService.scrape_website,
@@ -101,7 +122,8 @@ def scrape_website_async(
 def preview_website_scraping(
     bot_id: int,
     url: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Preview what would be scraped from a URL
@@ -111,6 +133,9 @@ def preview_website_scraping(
     bot = db.query(models.Bot).filter(models.Bot.id == bot_id).first()
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
+    
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     
     session = RequestsHelper.get_session()
     html = RequestsHelper.fetch_url(url, session)

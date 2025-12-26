@@ -30,44 +30,67 @@ export interface BotCreate {
   platform_token?: string;
 }
 
-export async function getBots(): Promise<Bot[]> {
-  const res = await fetch(`${API_URL}/api/v1/bots/`, { cache: "no-store" });
+export async function getBots(token?: string | null): Promise<Bot[]> {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/v1/bots/`, {
+    cache: "no-store",
+    headers
+  });
   if (!res.ok) throw new Error("Failed to fetch bots");
   return res.json();
 }
 
-export async function deleteBot(public_id: string): Promise<boolean> {
+export async function deleteBot(public_id: string, token?: string | null): Promise<boolean> {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${public_id}`, {
     method: "DELETE",
+    headers
   });
   return res.ok;
 }
 
-export async function createBot(data: BotCreate): Promise<Bot> {
+export async function createBot(data: BotCreate, token?: string | null): Promise<Bot> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/create`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Failed to create bot");
   return res.json();
 }
 
-export async function uploadFile(botId: string, file: File) {
+export async function uploadFile(botId: string, file: File, token?: string | null) {
   const formData = new FormData();
   formData.append("file", file);
+
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/upload`, {
     method: "POST",
     body: formData,
+    headers
   });
 
   if (!res.ok) throw new Error("Failed to upload file");
   return res.json();
 }
 
-export async function getBot(public_id: string): Promise<Bot> {
-  const res = await fetch(`${API_URL}/api/v1/bots/${public_id}`, { cache: "no-store" });
+export async function getBot(public_id: string, token?: string | null): Promise<Bot> {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API_URL}/api/v1/bots/${public_id}`, {
+    cache: "no-store",
+    headers
+  });
   if (!res.ok) throw new Error("Failed to fetch bot");
   return res.json();
 }
@@ -89,10 +112,13 @@ export async function getWidgetConfig(public_id: string) {
   return res.json();
 }
 
-export async function updateWidgetConfig(public_id: string, config: any) {
+export async function updateWidgetConfig(public_id: string, config: any, token?: string | null) {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${public_id}/widget-config`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(config),
   });
   if (!res.ok) throw new Error("Failed to update widget config");
@@ -102,23 +128,31 @@ export async function updateWidgetConfig(public_id: string, config: any) {
 
 // ===== Knowledge Base =====
 
-export async function getBotKnowledge(botId: string): Promise<{ files: Asset[] }> {
+export async function getBotKnowledge(botId: string, token?: string | null): Promise<{ files: Asset[] }> {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/knowledge-base`, {
     cache: "no-store",
+    headers
   });
   if (!res.ok) throw new Error("Failed to fetch knowledge base");
   return res.json();
 }
 
-export async function uploadBotKnowledge(botId: string, file: File) {
+export async function uploadBotKnowledge(botId: string, file: File, token?: string | null) {
   const fd = new FormData();
   fd.append("file", file);
+
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(
     `${API_URL}/api/v1/bots/${botId}/knowledge-base/upload`,
     {
       method: "POST",
       body: fd,
+      headers
     }
   );
 
@@ -126,10 +160,16 @@ export async function uploadBotKnowledge(botId: string, file: File) {
   return res.json();
 }
 
-export async function deleteBotKnowledge(botId: string, filename: string) {
+export async function deleteBotKnowledge(botId: string, filename: string, token?: string | null) {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(
     `${API_URL}/api/v1/bots/${botId}/knowledge-base/${filename}`,
-    { method: "DELETE" }
+    {
+      method: "DELETE",
+      headers
+    }
   );
 
   if (!res.ok) throw new Error("Failed to delete knowledge");
@@ -139,18 +179,25 @@ export async function deleteBotKnowledge(botId: string, filename: string) {
 // ===== Analytics =====
 import { ComprehensiveAnalytics } from "./types/analytics";
 
-export async function getComprehensiveAnalytics(botId: string): Promise<ComprehensiveAnalytics> {
+export async function getComprehensiveAnalytics(botId: string, token?: string | null): Promise<ComprehensiveAnalytics> {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/analytics/comprehensive`, {
     cache: "no-store",
+    headers
   });
   if (!res.ok) throw new Error("Failed to fetch analytics");
   return res.json();
 }
 
-export async function refreshAIInsights(botId: string): Promise<ComprehensiveAnalytics> {
+export async function refreshAIInsights(botId: string, token?: string | null): Promise<ComprehensiveAnalytics> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/analytics/refresh-insights`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
   });
   if (!res.ok) throw new Error("Failed to refresh insights");
   return res.json();

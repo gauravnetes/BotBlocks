@@ -6,9 +6,11 @@ import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
 
 export default function CreateBotWizard() {
   const router = useRouter();
+  const { getToken } = useAuth();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,6 +29,8 @@ export default function CreateBotWizard() {
   const handleCreate = async () => {
     setIsLoading(true);
     try {
+      const token = await getToken();
+
       // 1. Determine System Prompt
       let systemPrompt = "You are a helpful assistant.";
       if (persona === "friendly") systemPrompt = "You are a friendly and helpful assistant. Use emojis!";
@@ -40,12 +44,12 @@ export default function CreateBotWizard() {
         system_prompt: systemPrompt,
         platform: platform,
         platform_token: platformToken,
-      });
+      }, token);
 
       // 3. Upload Files (if RAG)
       if (type === "rag" && files.length > 0) {
         for (const file of files) {
-          await uploadFile(newBot.public_id, file);
+          await uploadFile(newBot.public_id, file, token);
         }
       }
 
@@ -53,7 +57,7 @@ export default function CreateBotWizard() {
       await updateWidgetConfig(newBot.public_id, {
         theme,
         welcome_message: welcomeMessage,
-      });
+      }, token);
 
       // 5. Redirect
       toast.success(`Bot "${name}" created successfully!`);

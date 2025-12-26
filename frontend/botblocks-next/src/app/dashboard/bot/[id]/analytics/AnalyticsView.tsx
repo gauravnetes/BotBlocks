@@ -13,12 +13,14 @@ import {
 import { Skeleton } from "@/components/ui/Skeleton";
 import { toast } from "sonner";
 import { AlertCircle, RefreshCw, X, Check, Loader2 } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
 
 interface AnalyticsViewProps {
     botId: string;
 }
 
 export default function AnalyticsView({ botId }: AnalyticsViewProps) {
+    const { getToken } = useAuth();
     const [analytics, setAnalytics] = useState<ComprehensiveAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,8 @@ export default function AnalyticsView({ botId }: AnalyticsViewProps) {
         setError(null);
         console.log("📊 Fetching analytics for bot:", botId);
         try {
-            const data = await getComprehensiveAnalytics(botId);
+            const token = await getToken();
+            const data = await getComprehensiveAnalytics(botId, token);
             console.log("✅ Analytics loaded:", data);
             setAnalytics(data);
         } catch (err) {
@@ -49,7 +52,8 @@ export default function AnalyticsView({ botId }: AnalyticsViewProps) {
         setRefreshing(true);
         console.log("🔄 Refreshing AI insights...");
         try {
-            const data = await refreshAIInsights(botId);
+            const token = await getToken();
+            const data = await refreshAIInsights(botId, token);
             console.log("✨ Insights refreshed:", data);
             setAnalytics(data);
             toast.success("AI Insights refreshed!");
@@ -71,7 +75,8 @@ export default function AnalyticsView({ botId }: AnalyticsViewProps) {
 
         setIsSubmitting(true);
         try {
-            const result = await resolveGap(botId, resolvingQuery, resolutionAnswer);
+            const token = await getToken();
+            const result = await resolveGap(botId, resolvingQuery, resolutionAnswer, undefined); // Assuming logId is optional/undefined here based on usage
             toast.success("Knowledge added & gap resolved!");
 
             // Close modal

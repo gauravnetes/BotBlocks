@@ -8,16 +8,25 @@ from services import asset_manager
 from services import rag_pipeline 
 import requests
 import logging
+from api.deps import get_current_user
 
 logger = logging.getLogger("KnowledgeRouter")
 
 router = APIRouter(prefix="/api/v1/bots", tags=["Knowledge Base"])
 
 @router.post("/{bot_id}/knowledge-base/upload")
-async def upload_knowledge(bot_id: str, file: UploadFile = File(...), db: Session = Depends(get_db)):
+async def upload_knowledge(
+    bot_id: str, 
+    file: UploadFile = File(...), 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     
     bot = db.query(models.Bot).filter(models.Bot.public_id == bot_id).first()
     if not bot: raise HTTPException(404, "Bot Not Found")
+
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     
     # We pass the public_id (bot_id) to asset_manager
     asset = asset_manager.upload_asset(db, bot_id, file)
@@ -65,20 +74,35 @@ async def upload_knowledge(bot_id: str, file: UploadFile = File(...), db: Sessio
 
 
 @router.get("/{bot_id}/knowledge-base")
-def list_knowledge(bot_id: str, db: Session = Depends(get_db)):
+def list_knowledge(
+    bot_id: str, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     # Verify bot exists
     bot = db.query(models.Bot).filter(models.Bot.public_id == bot_id).first()
     if not bot: raise HTTPException(404, "Bot Not Found")
+
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     files = asset_manager.list_assets(db, bot_id)
     return {"files": files}
 
 
 @router.delete("/{bot_id}/knowledge-base/{filename}")
-def delete_knowledge(bot_id: str, filename: str, db: Session = Depends(get_db)):
+def delete_knowledge(
+    bot_id: str, 
+    filename: str, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     
     bot = db.query(models.Bot).filter(models.Bot.public_id == bot_id).first()
     if not bot: raise HTTPException(404, "Bot Not Found")
+
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     success = asset_manager.delete_asset(db, bot_id, filename)
     if not success:

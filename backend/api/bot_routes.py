@@ -10,30 +10,53 @@ from db.database import get_db
 from services import data_ingestion, asset_manager
 
 
+from api.deps import get_current_user
+from db import models
+
 router = APIRouter(
     prefix="/api/v1/bots",
     tags=["Bots"]
 )
 
 @router.post("/create", response_model=schemas.Bot)
-def create_new_bot(bot: schemas.BotCreate, db: Session = Depends(get_db)):
+def create_new_bot(
+    bot: schemas.BotCreate, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     # Check if a bot with this name already exists (optional safety check)
     # existing_bot = db.query(models.Bot).filter(models.Bot.name == bot.name).first()
     # if existing_bot: ...
     
-    new_bot = crud.create_bot(db=db, bot=bot)
+    new_bot = crud.create_bot(db=db, bot=bot, owner_id=current_user.id)
     return new_bot
 
 @router.get("/{public_id}", response_model=schemas.Bot)
-def read_bot(public_id: str, db: Session = Depends(get_db)):
+def read_bot(
+    public_id: str, 
+    db: Session = Depends(get_db),
+    # Optional: If you want public read access, don't enforce auth here.
+    # If private, add auth dependency. keeping public for now as per "share with others" requirements usually found in these apps.
+    # But user asked: "other users bot willl only be visible for themselve not others"
+    # This usually applies to the LISTING. Accessing via ID might be sharable? 
+    # Let's assume listing is strict, direct access is semi-public or we can lock it down.
+    # For now, locking it down to owner would break public chat widgets.
+    # SO: Public ID access remains public (for widgets), Listing is private.
+):
     db_bot = crud.get_bot_by_public_id(db, public_id=public_id)
     if db_bot is None:
         raise HTTPException(status_code=404, detail="Bot not found")
     return db_bot
 
 @router.get("/", response_model=List[schemas.Bot])
-def read_all_bots(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    bots = crud.get_bots(db, skip=skip, limit=limit)
+def read_all_bots(
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    # Only return bots owned by current user
+    bots = crud.get_bots(db, skip=skip, limit=limit, owner_id=current_user.id)
     return bots
 
 def process_upload_background(file_path: str, bot_id: str):
@@ -49,12 +72,16 @@ async def upload_knowledge(
     public_id: str,
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user) 
 ):
-    # 1. Verify Bot Exists
+    # 1. Verify Bot Exists & Belongs to User
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
+    
+    if bot.owner_id != current_user.id:
+         raise HTTPException(status_code=403, detail="Not authorized to modify this bot")
 
     asset = asset_manager.upload_asset(db, public_id, file)
     if not asset:
@@ -84,10 +111,21 @@ async def upload_knowledge(
 
 
 @router.delete("/{public_id}")
-def delete_existing_bot(public_id: str, db: Session = Depends(get_db)):
+def delete_existing_bot(
+    public_id: str, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     """
     Delete a bot.
     """
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot:
+        raise HTTPException(status_code=404, detail="Bot not found")
+        
+    if bot.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to delete this bot")
+        
     success = crud.delete_bot(db, public_id)
     if not success:
         raise HTTPException(status_code=404, detail="Bot not found")
@@ -117,30 +155,50 @@ def get_bot_widget_config(public_id: str, db: Session = Depends(get_db)):
 def update_bot_visuals(
     public_id: str, 
     config: schemas.BotConfigUpdate, 
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
-    updated_bot = crud.update_bot_config(db, public_id, config)
-    if not updated_bot:
+    bot = crud.get_bot_by_public_id(db, public_id)
+    if not bot:
         raise HTTPException(status_code=404, detail="Bot Not Found")
+    
+    if bot.owner_id != current_user.id:
+         raise HTTPException(status_code=403, detail="Not authorized")
+
+    updated_bot = crud.update_bot_config(db, public_id, config)
     
     return updated_bot
 
 @router.get("/{public_id}/files")
-def get_bot_files(public_id: str, db: Session = Depends(get_db)):
-    
+def get_bot_files(
+    public_id: str, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot Not Found")
+
+    if bot.owner_id != current_user.id:
+         raise HTTPException(status_code=403, detail="Not authorized")
     
     files = data_ingestion.list_bot_files(public_id)
     return {"files": files}
 
 @router.delete("/{public_id}/files/{filename}")
-def delete_bot_file(public_id: str, filename: str, db: Session = Depends(get_db)):
+def delete_bot_file(
+    public_id: str, 
+    filename: str, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
     
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot Not Found")
+    
+    if bot.owner_id != current_user.id:
+         raise HTTPException(status_code=403, detail="Not authorized")
     
     success = data_ingestion.delete_bot_file(public_id, filename)
     if not success:
@@ -155,6 +213,7 @@ import mimetypes
 
 @router.get("/{public_id}/files/{filename}/download")
 def download_file(public_id: str, filename: str, inline: bool = False, db: Session = Depends(get_db)):
+    # Keeping download public for now or assume signed URLs in future
     url = asset_manager.get_asset_url(db, public_id, filename)
     if not url:
         raise HTTPException(status_code=404, detail="File not found")
@@ -223,7 +282,8 @@ def get_widget_configuration(public_id: str, db: Session = Depends(get_db)):
 def update_widget_configuration(
     public_id: str,
     config: schemas.WidgetConfigUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
 ):
     """
     Update widget configuration
@@ -233,6 +293,9 @@ def update_widget_configuration(
     bot = crud.get_bot_by_public_id(db, public_id)
     if not bot:
         raise HTTPException(status_code=404, detail="Bot not found")
+
+    if bot.owner_id != current_user.id:
+         raise HTTPException(status_code=403, detail="Not authorized")
     
     # Get current config
     try:
