@@ -3,6 +3,21 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from typing import Optional, Dict, Any
 
+class UserBase(BaseModel):
+    email: str
+    username: Optional[str] = None
+
+class UserCreate(UserBase):
+    clerk_id: str  # Received from Clerk
+
+class UserOut(UserBase):
+    id: int
+    clerk_id: str
+    created_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+    
+    
 class BotBase(BaseModel):
     name: str
     system_prompt: Optional[str] = "You are a helpful assistant."

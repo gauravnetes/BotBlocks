@@ -7,11 +7,11 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 from api import analytics
-
+d
 from db import models
 from db.database import engine
 
-from api import bot_routes, chat_routes, analytics, knowledge_routes
+from api import bot_routes, chat_routes, analytics, knowledge_routes, web_scraping
 
 if not os.path.exists('./data'):
     os.makedirs('./data')
@@ -42,6 +42,7 @@ app.include_router(bot_routes.router)
 app.include_router(chat_routes.router)
 app.include_router(analytics.router)
 app.include_router(knowledge_routes.router)
+app.include_router(web_scraping.router)
 
 @app.get("/api/v1/health")
 def get_health():

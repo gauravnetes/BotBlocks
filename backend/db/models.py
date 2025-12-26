@@ -1,12 +1,30 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, Float, ForeignKey, Boolean
 from sqlalchemy.sql import func
 from db.database import Base  
+from sqlalchemy.orm import relationship
+
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    # This is the 'sub' or 'user_id' from Clerk
+    clerk_id = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    username = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relationship: A user owns many bots
+    bots = relationship("Bot", back_populates="owner", cascade="all, delete-orphan")
 
 class Bot(Base):
     __tablename__ = "bots"
     
     id = Column(Integer, primary_key=True, index=True)
     public_id = Column(String, unique=True, index=True) 
+    
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    owner = relationship("User", back_populates="bots")
     
     name = Column(String, default="My Bot")
     system_prompt = Column(Text, default="You are a helpful assistant.")
@@ -28,6 +46,9 @@ class Bot(Base):
     
     cached_insight_summary = Column(Text, nullable=True)
     last_insight_at = Column(DateTime(timezone=True), nullable=True)
+    
+    assets = relationship("Asset", back_populates="bot", cascade="all, delete-orphan")
+    audit_logs = relationship("BotAuditLog", back_populates="bot", cascade="all, delete-orphan")
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

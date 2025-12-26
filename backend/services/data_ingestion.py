@@ -1,16 +1,30 @@
+"""
+Enhanced Data Ingestion Service
+================================
+Supports:
+- PDF/TXT file uploads (existing)
+- Web scraping (new)
+- Text content ingestion (new)
+"""
+
 import os
 import time
-import shutil
 import requests
 import tempfile
+from typing import Optional, Dict, Any
 from langchain_community.document_loaders import PyMuPDFLoader, TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
+from langchain_core.documents import Document
 from core.config import settings
 
 # Use environment variable for path (supports Docker/Vultr) or fallback to temp
 CHROMA_PATH = os.getenv("CHROMA_PATH", os.path.join(tempfile.gettempdir(), "botblocks_chroma_db"))
+
+# ============================================================================
+# EXISTING FILE UPLOAD FUNCTIONS (UNCHANGED)
+# ============================================================================
 
 def ingest_from_url(bot_id: str, file_url: str, filename: str):
     """
@@ -27,7 +41,8 @@ def ingest_from_url(bot_id: str, file_url: str, filename: str):
         
         # Create temp file with correct extension
         suffix = os.path.splitext(filename)[1]
-        if not suffix: suffix = ".tmp"
+        if not suffix: 
+            suffix = ".tmp"
             
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(res.content)
@@ -81,9 +96,10 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
     
     # 2. Split Text
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, 
-        chunk_overlap=200, 
-        add_start_index=True
+        chunk_size=1200,  # ✅ Increased from 1000 for better context
+        chunk_overlap=250,  # ✅ Increased from 200
+        add_start_index=True,
+        separators=["\n\n", "\n", ". ", " ", ""]
     )
     
     chunks = text_splitter.split_documents(documents)
@@ -93,11 +109,11 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
     for doc in chunks:
         doc.metadata["source"] = original_filename
         doc.metadata["bot_id"] = bot_id
+        doc.metadata["type"] = "file"  # ✅ New: Distinguish from web content
 
     # 4. Embed & Store
     print("Generating embeddings with BGE-small model...")
     try:           
-        # Using BGE-small for better accuracy
         embeddings = HuggingFaceEmbeddings(
             model_name="BAAI/bge-small-en-v1.5",
             model_kwargs={'device': 'cpu'},
@@ -106,23 +122,19 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
         
         collection_name = f"collection_{bot_id}"
         
-        # ✅ CRITICAL FIX: Get or create collection with cosine similarity FIRST
         vector_store = Chroma(
             persist_directory=CHROMA_PATH,
             embedding_function=embeddings,
             collection_name=collection_name,
-            collection_metadata={"hnsw:space": "cosine"}  # ← THIS WAS MISSING!
+            collection_metadata={"hnsw:space": "cosine"}
         )
         
-        # Now add documents in batches
+        # Add documents in batches
         BATCH_SIZE = 50 
         
         for i in range(0, len(chunks), BATCH_SIZE):
             batch = chunks[i : i + BATCH_SIZE]
-            
-            # ✅ Use add_documents instead of from_documents
             vector_store.add_documents(batch)
-            
             print(f"Processed batch {i} to {i + len(batch)}")
             
     except Exception as e:
@@ -131,7 +143,7 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
         traceback.print_exc()
         return False
 
-    # Note: ingest_from_url handles its own cleanup, but this is a safety net
+    # Cleanup
     if os.path.exists(file_path):
         try:
             os.remove(file_path)
@@ -142,9 +154,103 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
     print(f"🎉 INGESTION COMPLETE in {total_time:.2f}s")
     return True
 
+# ============================================================================
+# NEW: TEXT CONTENT INGESTION (FOR WEB SCRAPING)
+# ============================================================================
+
+def ingest_text_content(
+    bot_id: str,
+    content: str,
+    source_name: str,
+    metadata: Optional[Dict[str, Any]] = None
+) -> bool:
+    """
+    Ingest raw text content (from web scraping or other sources)
+    
+    Args:
+        bot_id: Bot public_id (UUID string)
+        content: Raw text content
+        source_name: Source identifier (e.g., "web_homepage", "web_about")
+        metadata: Additional metadata (url, title, scraped_at, etc.)
+    
+    Returns:
+        bool: Success status
+    """
+    print(f"--- INGESTING TEXT CONTENT for Bot {bot_id}: {source_name} ---")
+    start_time = time.time()
+    
+    try:
+        # 1. Create Document
+        doc_metadata = {
+            "source": source_name,
+            "bot_id": bot_id,
+            "type": "web"  # Mark as web-scraped content
+        }
+        
+        # Merge additional metadata
+        if metadata:
+            doc_metadata.update(metadata)
+        
+        raw_doc = Document(
+            page_content=content,
+            metadata=doc_metadata
+        )
+        
+        print(f"📄 Content length: {len(content)} characters")
+        
+        # 2. Split into chunks
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1200,
+            chunk_overlap=250,
+            add_start_index=True,
+            separators=["\n\n", "\n", ". ", " ", ""]
+        )
+        
+        chunks = text_splitter.split_documents([raw_doc])
+        print(f"Split into {len(chunks)} chunks")
+        
+        # 3. Setup embeddings and vector store
+        embeddings = HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
+        
+        collection_name = f"collection_{bot_id}"
+        
+        vector_store = Chroma(
+            persist_directory=CHROMA_PATH,
+            embedding_function=embeddings,
+            collection_name=collection_name,
+            collection_metadata={"hnsw:space": "cosine"}
+        )
+        
+        # 4. Add to vector store in batches
+        BATCH_SIZE = 50
+        
+        for i in range(0, len(chunks), BATCH_SIZE):
+            batch = chunks[i : i + BATCH_SIZE]
+            vector_store.add_documents(batch)
+            print(f"Processed batch {i} to {i + len(batch)}")
+        
+        total_time = time.time() - start_time
+        print(f"🎉 TEXT INGESTION COMPLETE in {total_time:.2f}s")
+        return True
+    
+    except Exception as e:
+        print(f"❌ Text Ingestion Error: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+# ============================================================================
+# EXISTING UTILITY FUNCTIONS (ENHANCED)
+# ============================================================================
+
 def list_bot_files(bot_id: str):
     """
-    Returns unique filenames stored in the vector database.
+    Returns unique sources stored in the vector database.
+    Now includes both files and web sources.
     """
     try:
         embeddings = HuggingFaceEmbeddings(
@@ -156,26 +262,49 @@ def list_bot_files(bot_id: str):
             persist_directory=CHROMA_PATH, 
             embedding_function=embeddings, 
             collection_name=f"collection_{bot_id}",
-            collection_metadata={"hnsw:space": "cosine"}  # ✅ Added
+            collection_metadata={"hnsw:space": "cosine"}
         )
         
         # Get metadata
         data = vector_store.get(include=["metadatas"])
         
-        unique_files = set()
+        sources = []
+        seen = set()
+        
         for meta in data["metadatas"]:
             if meta and "source" in meta:
-                unique_files.add(meta["source"])
+                source_name = meta["source"]
                 
-        return list(unique_files)
+                # Skip duplicates
+                if source_name in seen:
+                    continue
+                
+                seen.add(source_name)
+                
+                # Build source info
+                source_info = {
+                    "name": source_name,
+                    "type": meta.get("type", "file"),  # "file" or "web"
+                }
+                
+                # Add web-specific metadata
+                if meta.get("type") == "web":
+                    source_info["url"] = meta.get("url", "")
+                    source_info["title"] = meta.get("title", "")
+                    source_info["scraped_at"] = meta.get("scraped_at", "")
+                
+                sources.append(source_info)
+        
+        return sources
     
     except Exception as e:
         print(f"List Error: {e}")
         return []
-    
-def delete_bot_file(bot_id: str, filename: str):
+
+def delete_bot_source(bot_id: str, source_name: str):
     """
-    Deletes all vectors associated with a specific file.
+    Deletes all vectors associated with a specific source (file or web page).
+    Renamed from delete_bot_file to be more generic.
     """
     try:
         embeddings = HuggingFaceEmbeddings(
@@ -188,14 +317,68 @@ def delete_bot_file(bot_id: str, filename: str):
             persist_directory=CHROMA_PATH, 
             embedding_function=embeddings, 
             collection_name=f"collection_{bot_id}",
-            collection_metadata={"hnsw:space": "cosine"}  # ✅ Added
+            collection_metadata={"hnsw:space": "cosine"}
         )
         
-        print(f"🗑️ Deleting vectors for file: {filename}")
+        print(f"🗑️ Deleting vectors for source: {source_name}")
         
-        vector_store._collection.delete(where={"source": filename})
+        vector_store._collection.delete(where={"source": source_name})
         return True
     
     except Exception as e:
         print(f"Delete Error: {e}")
         return False
+
+# Backward compatibility alias
+delete_bot_file = delete_bot_source
+
+# ============================================================================
+# NEW: WEB SCRAPING STATISTICS
+# ============================================================================
+
+def get_collection_stats(bot_id: str) -> Dict[str, Any]:
+    """
+    Get statistics about the bot's knowledge base
+    """
+    try:
+        embeddings = HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
+        
+        vector_store = Chroma(
+            persist_directory=CHROMA_PATH,
+            embedding_function=embeddings,
+            collection_name=f"collection_{bot_id}",
+            collection_metadata={"hnsw:space": "cosine"}
+        )
+        
+        data = vector_store.get(include=["metadatas"])
+        
+        total_chunks = len(data["metadatas"])
+        file_count = 0
+        web_count = 0
+        
+        for meta in data["metadatas"]:
+            if meta:
+                if meta.get("type") == "web":
+                    web_count += 1
+                else:
+                    file_count += 1
+        
+        return {
+            "total_chunks": total_chunks,
+            "file_chunks": file_count,
+            "web_chunks": web_count,
+            "sources": len(list_bot_files(bot_id))
+        }
+    
+    except Exception as e:
+        print(f"Stats Error: {e}")
+        return {
+            "total_chunks": 0,
+            "file_chunks": 0,
+            "web_chunks": 0,
+            "sources": 0
+        }
