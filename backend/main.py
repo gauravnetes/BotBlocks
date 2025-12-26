@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 import os
 from api import analytics
-d
+
 from db import models
 from db.database import engine
 

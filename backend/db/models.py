@@ -54,7 +54,7 @@ class Asset(Base):
     __tablename__ = "assets"
     
     id = Column(Integer, primary_key=True, index=True)
-    bot_id = Column(String, index=True)
+    bot_id = Column(Integer, ForeignKey("bots.id"), index=True) 
     
     filename = Column(String)
     cloudinary_url = Column(String)
@@ -63,6 +63,8 @@ class Asset(Base):
     file_size = Column(Integer)
     
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    bot = relationship("Bot", back_populates="assets")
     
 class BotAuditLog(Base):
     __tablename__ = "bot_audit_logs"
@@ -78,4 +80,6 @@ class BotAuditLog(Base):
     is_resolved = Column(Boolean, default=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    bot = relationship("Bot", back_populates="audit_logs")
     
