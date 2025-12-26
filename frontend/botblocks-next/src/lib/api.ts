@@ -203,18 +203,25 @@ export async function refreshAIInsights(botId: string, token?: string | null): P
   return res.json();
 }
 
-export async function getKnowledgeGapStats(botId: string, days: number = 7) {
+export async function getKnowledgeGapStats(botId: string, days: number = 7, token?: string | null) {
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/analytics/gaps?days=${days}`, {
     cache: "no-store",
+    headers,
   });
   if (!res.ok) throw new Error("Failed to fetch gap stats");
   return res.json();
 }
 
-export async function resolveGap(botId: string, query: string, answer: string, logId?: number): Promise<{ status: string, new_health_score: number }> {
+export async function resolveGap(botId: string, query: string, answer: string, logId?: number, token?: string | null): Promise<{ status: string, new_health_score: number }> {
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
   const res = await fetch(`${API_URL}/api/v1/bots/${botId}/analytics/resolve-gap`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ query, answer, log_id: logId }),
   });
 

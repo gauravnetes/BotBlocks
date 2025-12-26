@@ -30,29 +30,38 @@ def get_current_user(
     # Check if user exists in DB
     user = db.query(models.User).filter(models.User.clerk_id == clerk_id).first()
     
+    # ... (previous)
+    
     # Extract details from token first (fastest)
     email = payload.get("email")
     username = payload.get("username")
+    
+    print(f"DEBUG: Initial Token Payload - Email: {email}, Username: {username}")
     
     # If not in top-level, check standard Clerk locations
     if not email and "email_addresses" in payload:
         emails = payload["email_addresses"]
         if isinstance(emails, list) and emails:
             email = emails[0].get("email_address")
+            print(f"DEBUG: Found email in email_addresses claim: {email}")
             
     # FETCH FROM CLERK API if missing (Robust fallback)
-    # We need CLERK_SECRET_KEY in backend .env for this to work
     import os
     import requests
     CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
+    print(f"DEBUG: CLERK_SECRET_KEY present? {bool(CLERK_SECRET_KEY)}")
     
     if (not email or not username) and CLERK_SECRET_KEY:
         try:
+             print(f"DEBUG: Fetching full profile from Clerk API for {clerk_id}...")
              # Fetch user from Clerk API
              headers = {"Authorization": f"Bearer {CLERK_SECRET_KEY}"}
              resp = requests.get(f"https://api.clerk.com/v1/users/{clerk_id}", headers=headers)
+             print(f"DEBUG: Clerk API Response Status: {resp.status_code}")
+             
              if resp.status_code == 200:
                  clerk_user = resp.json()
+                 # print(f"DEBUG: Clerk User Data: {clerk_user}") # Be careful with PII logs
                  
                  # Extract Email
                  if not email and clerk_user.get("email_addresses"):
@@ -64,10 +73,14 @@ def get_current_user(
                              break
                      if not email: # fallback to first
                          email = clerk_user["email_addresses"][0]["email_address"]
+                     print(f"DEBUG: Extracted email from API: {email}")
                          
                  # Extract Username
                  if not username:
                      username = clerk_user.get("username")
+                     print(f"DEBUG: Extracted username from API: {username}")
+             else:
+                 print(f"DEBUG: Failed request content: {resp.text}")
                      
         except Exception as e:
             print(f"Failed to fetch user from Clerk API: {e}")
@@ -75,6 +88,7 @@ def get_current_user(
     # Fallback if still missing
     if not email:
          email = f"{clerk_id}@clerk.user"
+         print("DEBUG: Using fallback ID-based email")
          
     if not user:
         # Create new user
