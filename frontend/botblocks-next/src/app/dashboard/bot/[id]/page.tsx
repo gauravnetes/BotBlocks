@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import { getBot, chatWithBot, Bot, getWidgetConfig, updateWidgetConfig } from "@/lib/api";
 import { ArrowLeft, MessageSquare, Code, Settings as SettingsIcon, Send, Copy, Check, Palette, Book } from "lucide-react";
+import { toast } from "sonner";
 import { WidgetCustomizer } from "@/components/dashboard/WidgetCustomizer";
 import { WidgetPreview } from "@/components/dashboard/WidgetPreview";
 import Link from "next/link";
@@ -89,7 +90,20 @@ export default function BotDetailPage() {
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => {
+              if (tab.id === "knowledge") {
+                // Check if it's a RAG bot
+                const botType = bot?.bot_type || "rag"; // Default to rag
+                if (botType !== "rag") {
+                  toast.error("Access Denied", {
+                    description: "Knowledge Base is only available for Knowledge Bots (RAG).",
+                    duration: 4000,
+                  });
+                  return;
+                }
+              }
+              setActiveTab(tab.id as any);
+            }}
             className={`flex items-center gap-2 px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
               ? "border-blue-500 text-blue-500"
               : "border-transparent text-zinc-400 hover:text-white"

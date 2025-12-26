@@ -5,12 +5,15 @@ export interface Bot {
   name: string;
   description?: string;
   system_prompt?: string;
+  bot_type?: "rag" | "persona";
   platform?: string;
   created_at?: string;
+  widget_config?: string;
 }
 
 export interface BotCreate {
   name: string;
+  bot_type: "rag" | "persona";
   system_prompt?: string;
   platform?: string;
   platform_token?: string;

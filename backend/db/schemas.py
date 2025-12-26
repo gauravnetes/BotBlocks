@@ -5,6 +5,7 @@ from typing import Optional, Dict, Any
 
 class BotBase(BaseModel):
     name: str
+    bot_type: str = "rag"
     system_prompt: Optional[str] = "You are a helpful assistant."
     platform: str = "web"
     platform_token: Optional[str] = None
@@ -32,6 +33,7 @@ class WidgetConfig(BaseModel):
     bot_display_name: Optional[str] = None
     position: str = "bottom-right"  # bottom-right, bottom-left
     button_style: str = "circle"  # circle, rounded, square
+    bot_type: str = "rag" # rag, persona
 
 class WidgetConfigUpdate(BaseModel):
     theme: Optional[str] = None
@@ -41,6 +43,7 @@ class WidgetConfigUpdate(BaseModel):
     bot_display_name: Optional[str] = None
     position: Optional[str] = None
     button_style: Optional[str] = None
+    bot_type: Optional[str] = None
         
 class Bot(BotBase):
     id: int

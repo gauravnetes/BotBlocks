@@ -30,8 +30,22 @@ export function BotCard({ bot }: { bot: Bot }) {
             Active
           </span>
         </div>
-        <div className="text-xs text-zinc-500 font-mono border border-white/5 px-2 py-1 rounded bg-zinc-950">
-          {bot.platform || "WEB"}
+        <div className="flex gap-2">
+          {(() => {
+            const type = bot.bot_type || "rag";
+
+            return (
+              <div className={`text-xs font-bold px-2 py-1 rounded border uppercase ${type === 'persona'
+                ? "text-purple-400 border-purple-400/20 bg-purple-400/10"
+                : "text-amber-400 border-amber-400/20 bg-amber-400/10"
+                }`}>
+                {type === 'persona' ? '🎭 Persona' : '📚 RAG'}
+              </div>
+            );
+          })()}
+          <div className="text-xs text-zinc-500 font-mono border border-white/5 px-2 py-1 rounded bg-zinc-950 uppercase">
+            {bot.platform || "WEB"}
+          </div>
         </div>
       </div>
 
