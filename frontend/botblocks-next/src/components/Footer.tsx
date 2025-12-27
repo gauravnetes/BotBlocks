@@ -56,29 +56,23 @@ export function Footer() {
                         <div>
                             <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Product</h3>
                             <ul className="space-y-4 text-sm">
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Testimonials</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Pricing</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Security</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Changelog</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Affiliates</Link></li>
+                                <li><Link href="/#features" className="text-zinc-500 hover:text-white transition-colors">Features</Link></li>
+                                <li><Link href="/pricing" className="text-zinc-500 hover:text-white transition-colors">Pricing</Link></li>
+                                <li><Link href="/docs" className="text-zinc-500 hover:text-white transition-colors">API</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Resources</h3>
                             <ul className="space-y-4 text-sm">
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Contact us</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">API</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Guide</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Blog</Link></li>
+                                <li><Link href="/docs" className="text-zinc-500 hover:text-white transition-colors">Documentation</Link></li>
+                                <li><Link href="/blog" className="text-zinc-500 hover:text-white transition-colors">Blog</Link></li>
                             </ul>
                         </div>
                         <div>
                             <h3 className="font-bold text-white mb-6 uppercase tracking-wider text-xs">Company</h3>
                             <ul className="space-y-4 text-sm">
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Careers</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Privacy policy</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Terms of service</Link></li>
-                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">DPA</Link></li>
+                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">About</Link></li>
+                                <li><Link href="#" className="text-zinc-500 hover:text-white transition-colors">Contact</Link></li>
                             </ul>
                         </div>
                     </div>
