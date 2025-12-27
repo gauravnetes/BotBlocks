@@ -45,6 +45,9 @@ class Bot(Base):
     cached_insight_summary = Column(Text, nullable=True)
     last_insight_at = Column(DateTime(timezone=True), nullable=True)
     
+    # Analytics Counter
+    total_queries = Column(Integer, default=0)
+    
     assets = relationship("Asset", back_populates="bot", cascade="all, delete-orphan")
     audit_logs = relationship("BotAuditLog", back_populates="bot", cascade="all, delete-orphan")
     

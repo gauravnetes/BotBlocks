@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBot, uploadFile, updateWidgetConfig, scrapeWebsiteAsync } from "@/lib/api";
-import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -440,7 +440,7 @@ export default function CreateBotWizard() {
                 >
                   {isLoading ? (
                     <>
-                      <span className="animate-spin">⏳</span> Creating...
+                      <Loader2 className="w-5 h-5 animate-spin" /> Creating...
                     </>
                   ) : (
                     <>

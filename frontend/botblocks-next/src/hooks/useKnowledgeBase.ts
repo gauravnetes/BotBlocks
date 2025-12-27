@@ -9,11 +9,14 @@ export function useKnowledgeBase(botId: string) {
 
   const fetchFiles = async () => {
     try {
+      setLoading(true);
       const token = await getToken();
       const data = await getBotKnowledge(botId, token);
       setFiles(data.files || []);
     } catch (e) {
       console.error("Failed to fetch files", e);
+    } finally {
+      setLoading(false);
     }
   };
 

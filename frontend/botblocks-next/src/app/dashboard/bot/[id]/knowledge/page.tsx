@@ -25,7 +25,7 @@ export default function KnowledgePage() {
                 <h3 className="text-sm font-medium text-zinc-300 uppercase tracking-wider">
                     Uploaded Files ({files.length})
                 </h3>
-                <KnowledgeList files={files} onDelete={removeFile} botId={id} />
+                <KnowledgeList files={files} onDelete={removeFile} botId={id} loading={loading} />
             </div>
         </div>
     );

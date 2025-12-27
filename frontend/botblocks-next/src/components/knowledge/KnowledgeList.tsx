@@ -7,13 +7,33 @@ interface KnowledgeListProps {
     files: Asset[];
     onDelete: (filename: string) => void;
     botId: string;
+    loading?: boolean;
 }
 
-export function KnowledgeList({ files, onDelete, botId }: KnowledgeListProps) {
+export function KnowledgeList({ files, onDelete, botId, loading }: KnowledgeListProps) {
     const [previewFile, setPreviewFile] = useState<string | null>(null);
 
     const getDownloadUrl = (filename: string, inline = false) =>
         `${API_URL}/api/v1/bots/${botId}/files/${filename}/download${inline ? "?inline=true" : ""}`;
+
+    if (loading) {
+        return (
+            <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-lg animate-pulse">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-800" />
+                            <div className="space-y-2">
+                                <div className="h-4 w-48 bg-zinc-800 rounded" />
+                                <div className="h-3 w-24 bg-zinc-800 rounded" />
+                            </div>
+                        </div>
+                        <div className="h-4 w-8 bg-zinc-800 rounded" />
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     if (files.length === 0) {
         return (
