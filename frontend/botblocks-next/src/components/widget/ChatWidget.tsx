@@ -23,9 +23,17 @@ interface ChatWidgetProps {
         button_style?: 'circle' | 'rounded' | 'square';
     };
     previewMode?: boolean;
+    customWidth?: string;
+    customHeight?: string;
 }
 
-export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetProps) {
+export function ChatWidget({
+    botId,
+    config,
+    previewMode = false,
+    customWidth = '400px',
+    customHeight = '600px'
+}: ChatWidgetProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         { text: config.welcome_message, type: 'bot' }
@@ -75,8 +83,9 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                 type: 'BOTBLOCKS_RESIZE',
                 // Large padding for shadows
                 // Increased container size for larger widget + shadows
-                width: isOpen ? '460px' : '120px',
-                height: isOpen ? '820px' : '120px',
+                // Use custom dimensions + 60px/220px padding for shadows and gap
+                width: isOpen ? `calc(${customWidth} + 60px)` : '120px',
+                height: isOpen ? `calc(${customHeight} + 220px)` : '120px',
                 position: config.position,
                 isOpen
             };
@@ -160,9 +169,11 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
             {/* Chat Window */}
             {isOpen && (
                 <div
-                    className="w-[400px] max-w-[calc(100vw-40px)] h-[600px] max-h-[calc(100vh-100px)] flex flex-col overflow-hidden"
+                    className="max-w-[calc(100vw-40px)] flex flex-col overflow-hidden"
                     style={{
                         ...windowStyle,
+                        width: customWidth,
+                        height: customHeight,
                         background: theme.windowBackground,
                         backdropFilter: theme.backdropFilter,
                         WebkitBackdropFilter: theme.backdropFilter,
