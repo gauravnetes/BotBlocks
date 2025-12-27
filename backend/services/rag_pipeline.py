@@ -159,9 +159,7 @@ def log_knowledge_gap(bot: models.Bot, message: str, response: str, metadata: Di
     except Exception as log_error:
         logger.error(f"Audit log error: {log_error}")
 
-# ============================================================================
 # ADAPTIVE RETRIEVAL
-# ============================================================================
 def get_adaptive_k(query: str) -> int:
     """Determine optimal number of documents based on query complexity"""
     word_count = len(query.split())
@@ -174,9 +172,8 @@ def get_adaptive_k(query: str) -> int:
     else:
         return 9  # Increased from 7
 
-# ============================================================================
+
 # MAIN RAG FUNCTION - OPTIMIZED
-# ============================================================================
 def generate_response(message: str, bot: models.Bot, db: Session) -> str:
     """Main RAG pipeline with selective audit logging"""
     logger.info(f"RAG START: Processing message for bot {bot.public_id}")
@@ -409,7 +406,11 @@ def remove_document_from_knowledge_base(bot_id: str, source_filename: str) -> bo
     logger.info(f"RAG: Removing {source_filename} from bot {bot_id}")
     
     try:
-        embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        embeddings = HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu'},
+            encode_kwargs={'normalize_embeddings': True}
+        )
         
         collection_name = f"collection_{bot_id}"
         
