@@ -29,19 +29,18 @@ export function HealthScoreWidget({ score }: HealthScoreWidgetProps) {
             <div className="w-[180px] h-[180px] hover:scale-105 transition-transform duration-500 ease-out">
                 <CircularProgressbar
                     value={score}
-                    text={`${Math.round(score)}%`}
+                    text={label}
                     styles={buildStyles({
                         pathColor: color,
-                        textColor: "#fff",
+                        textColor: color, // Match text color to status color
                         trailColor: "rgba(255,255,255,0.05)",
-                        textSize: "16px",
+                        textSize: "14px", // Smaller text to fit label
                         pathTransitionDuration: 0.8,
-                        backgroundColor: "#3e98c7",
                     })}
                 />
             </div>
             <div className="mt-6 text-center animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <p className="text-2xl font-bold transition-colors duration-300" style={{ color }}>{label}</p>
+                <p className="text-3xl font-bold text-white transition-colors duration-300">{Math.round(score)}%</p>
                 <p className="text-zinc-500 text-sm mt-1 max-w-[200px] mx-auto">{description}</p>
             </div>
         </div>

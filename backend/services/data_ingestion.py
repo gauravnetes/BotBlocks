@@ -113,12 +113,10 @@ def ingest_file_from_path(file_path: str, bot_id: str, original_filename: str = 
 
     # 4. Embed & Store
     print("Generating embeddings with BGE-small model...")
+    # 4. Embed & Store
+    print("Generating embeddings with BGE-small model...")
     try:           
-        embeddings = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
-        )
+        embeddings = get_embeddings_model()
         
         collection_name = f"collection_{bot_id}"
         
@@ -210,11 +208,7 @@ def ingest_text_content(
         print(f"Split into {len(chunks)} chunks")
         
         # 3. Setup embeddings and vector store
-        embeddings = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
-        )
+        embeddings = get_embeddings_model()
         
         collection_name = f"collection_{bot_id}"
         
@@ -247,17 +241,32 @@ def ingest_text_content(
 # EXISTING UTILITY FUNCTIONS (ENHANCED)
 # ============================================================================
 
+def get_embeddings_model():
+    """
+    Centralized embedding model loader with error handling.
+    Fixes 'meta tensor' issues by enforcing CPU safeload.
+    """
+    try:
+        # Prevent potential recursion or meta device issues
+        return HuggingFaceEmbeddings(
+            model_name="BAAI/bge-small-en-v1.5",
+            model_kwargs={'device': 'cpu', 'trust_remote_code': True},
+            encode_kwargs={'normalize_embeddings': True}
+        )
+    except Exception as e:
+        print(f"⚠️ Embedding Load Error: {e}. Retrying...")
+        # Fallback if specific kwargs fail
+        return HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+
+
 def list_bot_files(bot_id: str):
     """
     Returns unique sources stored in the vector database.
     Now includes both files and web sources.
     """
     try:
-        embeddings = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
-        )
+        embeddings = get_embeddings_model()
+        
         vector_store = Chroma(
             persist_directory=CHROMA_PATH, 
             embedding_function=embeddings, 
@@ -307,11 +316,7 @@ def delete_bot_source(bot_id: str, source_name: str):
     Renamed from delete_bot_file to be more generic.
     """
     try:
-        embeddings = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
-        )
+        embeddings = get_embeddings_model()
         
         vector_store = Chroma(
             persist_directory=CHROMA_PATH, 
@@ -341,11 +346,7 @@ def get_collection_stats(bot_id: str) -> Dict[str, Any]:
     Get statistics about the bot's knowledge base
     """
     try:
-        embeddings = HuggingFaceEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5",
-            model_kwargs={'device': 'cpu'},
-            encode_kwargs={'normalize_embeddings': True}
-        )
+        embeddings = get_embeddings_model()
         
         vector_store = Chroma(
             persist_directory=CHROMA_PATH,

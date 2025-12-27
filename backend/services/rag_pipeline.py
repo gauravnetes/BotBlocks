@@ -181,6 +181,15 @@ def generate_response(message: str, bot: models.Bot, db: Session) -> str:
     """Main RAG pipeline with selective audit logging"""
     logger.info(f"RAG START: Processing message for bot {bot.public_id}")
     
+    # ✅ METRICS: Increment total queries count for accurate analytics
+    try:
+        if bot:
+            bot.total_queries = (bot.total_queries or 0) + 1
+            db.add(bot)
+            db.commit()
+    except Exception as e:
+        logger.error(f"Failed to increment stats: {e}")
+    
     try:
         # STEP 1: SEMANTIC ROUTING (No logging for these)
         should_skip, route_type = SemanticRouter.should_skip_rag(message)

@@ -1,18 +1,21 @@
 "use client";
 import Link from "next/link";
 import { Bot, deleteBot } from "@/lib/api";
-import { MessageSquare, Code, Trash2 } from "lucide-react";
+import { MessageSquare, Code, Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "@clerk/nextjs";
 
 export function BotCard({ bot }: { bot: Bot }) {
   const router = useRouter();
+  const { getToken } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this bot?")) return;
     setIsDeleting(true);
-    const success = await deleteBot(bot.public_id);
+    const token = await getToken();
+    const success = await deleteBot(bot.public_id, token);
     if (success) {
       router.refresh();
     } else {
@@ -54,6 +57,7 @@ export function BotCard({ bot }: { bot: Bot }) {
       </p>
 
       <div className="grid grid-cols-3 gap-2">
+
         <Link
           href={`/dashboard/bot/${bot.public_id}?tab=chat`}
           className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-zinc-300 bg-white/5 rounded-lg hover:bg-white/10 hover:text-white transition-colors"
@@ -71,7 +75,8 @@ export function BotCard({ bot }: { bot: Bot }) {
           disabled={isDeleting}
           className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-zinc-300 bg-white/5 rounded-lg hover:bg-red-500/10 hover:text-red-500 transition-colors disabled:opacity-50"
         >
-          <Trash2 className="w-4 h-4" /> {isDeleting ? "..." : "Del"}
+          {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+          {isDeleting ? "Deleting..." : "Del"}
         </button>
       </div>
     </div>

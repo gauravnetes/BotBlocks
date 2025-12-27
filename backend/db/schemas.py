@@ -65,9 +65,10 @@ class Bot(BotBase):
     public_id: str
     created_at: datetime
     widget_config: Optional[str] = None  # JSON string
+    health_score: Optional[float] = None
+    last_health_check_at: Optional[datetime] = None
     
-    class Config:
-        form_attributes = True
+    model_config = ConfigDict(from_attributes=True)
                 
         
 class ChatRequest(BaseModel):  
