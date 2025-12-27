@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Twitter, Linkedin, ShieldCheck, Lock, Instagram, Youtube } from "lucide-react";
+import { ProgressiveBlur } from "./ui/ProgressiveBlur";
 
 export function Footer() {
     return (
@@ -9,6 +10,8 @@ export function Footer() {
                 <span className="text-[13rem] md:text-[15rem] text-white font-bold text-transparent leading-none [-webkit-text-stroke:1px_rgba(255,255,255,0.05)] opacity-100">
                     BotBlocks
                 </span>
+                <ProgressiveBlur height="50%" position="bottom" />
+
             </div>
 
             <div className="container relative z-10 mx-auto  md-10 px-6">
@@ -45,7 +48,7 @@ export function Footer() {
                             </div>
                         </div>
 
-                       
+
                     </div>
 
                     {/* Links Columns */}

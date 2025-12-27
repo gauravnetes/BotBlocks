@@ -4,9 +4,9 @@ import { Zap } from "lucide-react";
 
 export function Navbar() {
     return (
-        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-6 backdrop-blur-sm">
+        <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-14 py-6 backdrop-blur-sm">
             <div className="flex items-center gap-2 text-xl font-bold text-white">
-                <Zap className="h-6 w-6 text-blue-500" fill="currentColor" />
+                <img src="/logo.png" alt="logo png" className="h-8 w-8" />
                 BotBlocks
             </div>
             <div className="flex gap-8 text-sm font-medium text-zinc-400 items-center">

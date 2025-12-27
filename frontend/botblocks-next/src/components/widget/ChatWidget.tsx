@@ -16,6 +16,8 @@ interface ChatWidgetProps {
         welcome_message: string;
         bot_display_name: string;
         position: 'bottom-right' | 'bottom-left';
+        suggested_questions?: string[];
+        button_style?: 'circle' | 'rounded' | 'square';
     };
     previewMode?: boolean;
 }
@@ -36,19 +38,19 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const sendMessage = async () => {
-        if (!input.trim() || isLoading) return;
+    const sendMessage = async (overrideText?: string) => {
+        const textToSend = overrideText || input.trim();
+        if (!textToSend || isLoading) return;
 
-        const userMessage = input.trim();
         setInput('');
-        setMessages(prev => [...prev, { text: userMessage, type: 'user' }]);
+        setMessages(prev => [...prev, { text: textToSend, type: 'user' }]);
         setIsLoading(true);
 
         try {
             const res = await fetch('http://127.0.0.1:8000/api/v1/chat/web', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bot_id: botId, message: userMessage })
+                body: JSON.stringify({ bot_id: botId, message: textToSend })
             });
 
             const data = await res.json();
@@ -69,8 +71,8 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
             const message = {
                 type: 'BOTBLOCKS_RESIZE',
                 // Large padding for shadows
-                width: isOpen ? '550px' : '150px',
-                height: isOpen ? '920px' : '160px',
+                width: isOpen ? '420px' : '150px', // slightly larger for shadows
+                height: isOpen ? '600px' : '160px',
                 isOpen
             };
             window.parent.postMessage(message, '*');
@@ -117,8 +119,8 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                 onClick={toggleWidget}
                 className="transition-all duration-200 ease-out hover:scale-110"
                 style={{
-                    width: '60px',
-                    height: '60px',
+                    width: '45px',
+                    height: '45px',
                     background: theme.toggleBackground,
                     backdropFilter: theme.backdropFilter,
                     WebkitBackdropFilter: theme.backdropFilter,
@@ -152,7 +154,7 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
             {/* Chat Window */}
             {isOpen && (
                 <div
-                    className="w-[400px] h-[600px] flex flex-col overflow-hidden"
+                    className="w-[360px] max-w-[calc(100vw-40px)] h-[500px] max-h-[calc(100vh-100px)] flex flex-col overflow-hidden"
                     style={{
                         ...windowStyle,
                         background: theme.windowBackground,
@@ -270,6 +272,42 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                             </div>
                         )}
                         <div ref={messagesEndRef} />
+
+                        {/* Suggested Questions */}
+                        {config.suggested_questions && config.suggested_questions.length > 0 && messages.length === 1 && (
+                            <div className="flex flex-col gap-2 mt-auto animate-[fadeIn_0.5s_ease-out]">
+                                {config.suggested_questions.map((q, idx) => (
+                                    <button
+                                        key={idx}
+                                        onClick={() => {
+                                            setInput(q);
+                                            // Need to wrap in timeout/effect or call submit directly but input state update is async.
+                                            // Better to extract send logic to accept text.
+                                            // For now, let's just modify sendMessage to take optional text.
+                                            sendMessage(q);
+                                        }}
+                                        className="text-left px-4 py-2.5 rounded-xl text-sm transition-all duration-200 hover:-translate-y-0.5"
+                                        style={{
+                                            background: theme.botMessageBackground,
+                                            border: theme.botMessageBorder,
+                                            color: theme.botMessageText,
+                                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                                            backdropFilter: 'blur(10px)'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.background = theme.headerBackground;
+                                            e.currentTarget.style.borderColor = "#3b82f6"; // Fallback to blue-500 since primaryColor isn't on theme object directly
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.background = theme.botMessageBackground;
+                                            e.currentTarget.style.borderColor = 'transparent'; // assumption based on usage
+                                        }}
+                                    >
+                                        {q}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Input Area */}
@@ -284,13 +322,13 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                             onChange={(e) => setInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                             placeholder="Type your message..."
-                            className="flex-1 px-4 py-3 rounded-xl outline-none transition-all duration-200"
+                            className="flex-1 px-3 py-2.5 rounded-xl outline-none transition-all duration-200"
                             style={{
                                 background: theme.inputBackground,
                                 border: theme.inputBorder,
                                 borderRadius: theme.inputBorderRadius,
                                 color: theme.inputText,
-                                fontSize: '14px'
+                                fontSize: '13.5px'
                             }}
                             onFocus={(e) => {
                                 e.currentTarget.style.borderColor = theme.inputFocusBorder;
@@ -302,14 +340,14 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                             }}
                         />
                         <button
-                            onClick={sendMessage}
+                            onClick={() => sendMessage()}
                             disabled={!input.trim() || isLoading}
-                            className="px-5 py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{
                                 background: theme.sendButtonBackground,
                                 color: theme.sendButtonText,
                                 boxShadow: theme.sendButtonShadow,
-                                fontSize: '14px'
+                                fontSize: '13.5px'
                             }}
                             onMouseEnter={(e) => {
                                 if (!e.currentTarget.disabled) {
