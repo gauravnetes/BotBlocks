@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, X } from 'lucide-react';
 import { getTheme, ThemeName } from './themes';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Message {
     text: string;
@@ -253,7 +255,15 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                                     lineHeight: '1.5'
                                 }}
                             >
-                                {msg.text}
+                                {msg.type === 'bot' ? (
+                                    <div className="prose prose-sm prose-invert max-w-none break-words markdown-content">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {msg.text}
+                                        </ReactMarkdown>
+                                    </div>
+                                ) : (
+                                    msg.text
+                                )}
                             </div>
                         ))}
                         {isLoading && (
@@ -400,6 +410,38 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
 
         input::placeholder {
           color: ${theme.inputPlaceholder};
+        }
+
+        .markdown-content {
+            line-height: 1.6;
+            letter-spacing: 0.01em;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .markdown-content p {
+            margin-bottom: 0.8rem;
+        }
+        .markdown-content p:last-child {
+            margin-bottom: 0;
+        }
+        .markdown-content ul, .markdown-content ol {
+            padding-left: 1.2rem;
+            margin: 0.8rem 0;
+        }
+        .markdown-content li {
+            margin-bottom: 0.4rem;
+        }
+        .markdown-content strong {
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0;
+        }
+        .markdown-content code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.4rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
       `}</style>
         </div>
