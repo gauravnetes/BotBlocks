@@ -9,6 +9,8 @@ export function LandingBot() {
     return (
         <ChatWidget
             botId={LANDING_BOT_ID}
+            customWidth="350px"
+            customHeight="500px"
             config={{
                 theme: "classic",
                 primary_color: "#581c87", // Purple-900 (Darkish Unique)

@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { chatWithBot, Bot, getBot } from "@/lib/api";
 import { MessageSquare, Send } from "lucide-react";
 import { useParams } from "next/navigation";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function ChatPage() {
     const params = useParams();
@@ -56,7 +58,15 @@ export default function ChatPage() {
                             ? "bg-blue-600 text-white rounded-tr-sm"
                             : "bg-white/5 text-zinc-200 rounded-tl-sm"
                             }`}>
-                            {msg.content}
+                            {msg.role === "bot" ? (
+                                <div className="prose prose-sm prose-invert max-w-none break-words dashboard-markdown">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {msg.content}
+                                    </ReactMarkdown>
+                                </div>
+                            ) : (
+                                msg.content
+                            )}
                         </div>
                     </div>
                 ))}

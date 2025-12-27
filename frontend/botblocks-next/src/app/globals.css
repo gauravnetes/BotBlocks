@@ -21,6 +21,7 @@ body {
     opacity: 0;
     transform: scale(0.9) translateY(20px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -32,8 +33,58 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Dashboard Chat Markdown Styles - Premium Upgrade */
+.dashboard-markdown {
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dashboard-markdown p {
+  margin-bottom: 0.8rem;
+}
+
+.dashboard-markdown p:last-child {
+  margin-bottom: 0;
+}
+
+.dashboard-markdown ul,
+.dashboard-markdown ol {
+  padding-left: 1.5rem;
+  margin: 0.8rem 0;
+}
+
+.dashboard-markdown li {
+  margin-bottom: 0.4rem;
+}
+
+.dashboard-markdown strong {
+  font-weight: 700;
+  color: #fff;
+}
+
+.dashboard-markdown code {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.4rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Professional Polish: Hide Dev Indicators */
+#nextjs-portal,
+[data-nextjs-indicator],
+[data-nextjs-toast],
+.__next-static-indicator-stack {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }

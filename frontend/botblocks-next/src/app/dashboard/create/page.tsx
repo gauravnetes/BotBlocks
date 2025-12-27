@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBot, uploadFile, updateWidgetConfig, scrapeWebsiteAsync } from "@/lib/api";
-import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Upload, Check, Bot as BotIcon, FileText, Globe, MessageCircle, Loader2, Lock } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -285,17 +285,29 @@ export default function CreateBotWizard() {
               <h2 className="text-xl font-bold text-white">Where will this bot live?</h2>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { id: "web", label: "Website", icon: Globe },
-                  { id: "telegram", label: "Telegram", icon: MessageCircle },
-                  { id: "discord", label: "Discord", icon: MessageCircle },
+                  { id: "web", label: "Website", icon: Globe, disabled: false },
+                  { id: "telegram", label: "Telegram", icon: MessageCircle, disabled: true },
+                  { id: "discord", label: "Discord", icon: MessageCircle, disabled: true },
                 ].map((p) => (
                   <button
                     key={p.id}
-                    onClick={() => setPlatform(p.id as any)}
-                    className={`p-4 rounded-xl border text-center transition-all ${platform === p.id ? "bg-blue-600/10 border-blue-500" : "bg-zinc-900 border-white/10 hover:border-white/20"}`}
+                    onClick={() => !p.disabled && setPlatform(p.id as any)}
+                    disabled={p.disabled}
+                    className={`p-4 rounded-xl border text-center transition-all relative overflow-hidden ${platform === p.id
+                        ? "bg-blue-600/10 border-blue-500"
+                        : p.disabled
+                          ? "bg-zinc-900/40 border-white/5 cursor-not-allowed grayscale"
+                          : "bg-zinc-900 border-white/10 hover:border-white/20"
+                      }`}
                   >
-                    <p.icon className={`w-8 h-8 mx-auto mb-2 ${platform === p.id ? "text-blue-500" : "text-zinc-400"}`} />
-                    <span className={`font-medium ${platform === p.id ? "text-white" : "text-zinc-400"}`}>{p.label}</span>
+                    {p.disabled && (
+                      <div className="absolute top-2 right-2 flex items-center gap-1 bg-zinc-800 px-2 py-0.5 rounded-full border border-white/10">
+                        <Lock className="w-2.5 h-2.5 text-zinc-500" />
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Soon</span>
+                      </div>
+                    )}
+                    <p.icon className={`w-8 h-8 mx-auto mb-2 ${platform === p.id ? "text-blue-500" : "text-zinc-500"}`} />
+                    <span className={`font-medium block ${platform === p.id ? "text-white" : "text-zinc-500"}`}>{p.label}</span>
                   </button>
                 ))}
               </div>
