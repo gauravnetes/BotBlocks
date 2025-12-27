@@ -49,6 +49,8 @@ export function ChatWidget({
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+   // Inside ChatWidget.tsx
+
     const sendMessage = async (overrideText?: string) => {
         const textToSend = overrideText || input.trim();
         if (!textToSend || isLoading) return;
@@ -58,21 +60,47 @@ export function ChatWidget({
         setIsLoading(true);
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/api/v1/chat/web', {
+            console.log("Sending request to:", 'https://gauravnetes-botblocks-production.hf.space/api/v1/chat/web');
+            
+            const res = await fetch('https://gauravnetes-botblocks-production.hf.space/api/v1/chat/web', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ bot_id: botId, message: textToSend })
+                // ⚠️ CHECK: Does your backend expect 'message' or 'query'? 
+                // I have added both just in case, but you should match your Pydantic model.
+                body: JSON.stringify({ 
+                    bot_id: botId, 
+                    message: textToSend,
+                    query: textToSend 
+                })
             });
 
+            // 1. Check if the request actually worked
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({ detail: "Unknown Error" }));
+                console.error("API Error:", errorData);
+                throw new Error(errorData.detail || `Server error: ${res.status}`);
+            }
+
             const data = await res.json();
-            setMessages(prev => [...prev, { text: data.response, type: 'bot' }]);
-        } catch (error) {
-            setMessages(prev => [...prev, { text: 'Connection error. Please try again.', type: 'bot' }]);
+            
+            // 2. Handle success (ensure 'response' exists in the body)
+            setMessages(prev => [...prev, { 
+                text: data.response || data.answer || "No response text received", 
+                type: 'bot' 
+            }]);
+
+        } catch (error: any) {
+            console.error("Fetch error:", error);
+            // 3. Show the actual error message in the chat for debugging
+            setMessages(prev => [...prev, { 
+                text: `Error: ${error.message || 'Connection failed'}`, 
+                type: 'bot' 
+            }]);
         } finally {
             setIsLoading(false);
         }
     };
-
+    
     const toggleWidget = () => setIsOpen(prev => !prev);
     const closeWidget = () => setIsOpen(false);
 

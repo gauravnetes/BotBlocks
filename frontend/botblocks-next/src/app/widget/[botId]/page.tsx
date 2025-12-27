@@ -2,7 +2,7 @@ import { ChatWidget } from '@/components/widget/ChatWidget';
 
 async function getWidgetConfig(botId: string) {
   try {
-    const res = await fetch(`http://127.0.0.1:8000/api/v1/bots/${botId}/widget-config`, {
+    const res = await fetch(`https://gauravnetes-botblocks-production.hf.space/api/v1/bots/${botId}/widget-config`, {
       cache: 'no-store'
     });
 
