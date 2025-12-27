@@ -73,12 +73,12 @@ export default function EmbedPage() {
                     <pre className="bg-black/50 p-4 rounded-lg text-sm text-zinc-300 overflow-x-auto font-mono">
                         {`<iframe 
   src="http://localhost:3000/widget/${botId}"
-  style="position: fixed; bottom: 20px; ${isLeft ? 'left' : 'right'}: 20px; width: 420px; height: 700px; border: none; z-index: 9999;"
+  style="position: fixed; bottom: 20px; ${isLeft ? 'left' : 'right'}: 20px; width: 460px; height: 820px; border: none; z-index: 9999;"
   title="Chat Widget"
 ></iframe>`}
                     </pre>
                     <button
-                        onClick={() => copyToClipboard(`<iframe src="http://localhost:3000/widget/${botId}" style="position: fixed; bottom: 20px; ${isLeft ? 'left' : 'right'}: 20px; width: 420px; height: 700px; border: none; z-index: 9999;" title="Chat Widget"></iframe>`)}
+                        onClick={() => copyToClipboard(`<iframe src="http://localhost:3000/widget/${botId}" style="position: fixed; bottom: 20px; ${isLeft ? 'left' : 'right'}: 20px; width: 460px; height: 820px; border: none; z-index: 9999;" title="Chat Widget"></iframe>`)}
                         className="absolute top-2 right-2 bg-white/10 p-2 rounded hover:bg-white/20 text-white opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                         <Copy className="w-4 h-4" />

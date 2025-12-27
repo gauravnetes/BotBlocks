@@ -74,8 +74,9 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
             const message = {
                 type: 'BOTBLOCKS_RESIZE',
                 // Large padding for shadows
-                width: isOpen ? '420px' : '120px',
-                height: isOpen ? '680px' : '120px',
+                // Increased container size for larger widget + shadows
+                width: isOpen ? '460px' : '120px',
+                height: isOpen ? '820px' : '120px',
                 position: config.position,
                 isOpen
             };
@@ -159,7 +160,7 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
             {/* Chat Window */}
             {isOpen && (
                 <div
-                    className="w-[360px] max-w-[calc(100vw-40px)] h-[500px] max-h-[calc(100vh-100px)] flex flex-col overflow-hidden"
+                    className="w-[400px] max-w-[calc(100vw-40px)] h-[600px] max-h-[calc(100vh-100px)] flex flex-col overflow-hidden"
                     style={{
                         ...windowStyle,
                         background: theme.windowBackground,
