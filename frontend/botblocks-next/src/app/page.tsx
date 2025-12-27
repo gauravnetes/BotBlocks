@@ -12,6 +12,7 @@ export default function Home() {
       <LandingBot />
       <Features />
       <Footer />
+     
     </main>
   );
 }

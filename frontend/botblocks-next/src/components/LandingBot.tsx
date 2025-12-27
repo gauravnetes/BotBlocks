@@ -4,7 +4,7 @@ import { ChatWidget } from "./widget/ChatWidget";
 export function LandingBot() {
     // Placeholder Bot ID. In a real scenario, the user would create a bot in the dashboard
     // and replace this ID with the one generated.
-    const LANDING_BOT_ID = "landing-bot-demo";
+    const LANDING_BOT_ID = "7334ea7a-ed17-4fbc-879f-216daaf234db";
 
     return (
         <ChatWidget
