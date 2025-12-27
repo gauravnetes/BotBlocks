@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
+import { Send, X } from 'lucide-react';
 import { getTheme, ThemeName } from './themes';
 
 interface Message {
@@ -71,8 +72,9 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
             const message = {
                 type: 'BOTBLOCKS_RESIZE',
                 // Large padding for shadows
-                width: isOpen ? '420px' : '150px', // slightly larger for shadows
-                height: isOpen ? '600px' : '160px',
+                width: isOpen ? '420px' : '120px',
+                height: isOpen ? '680px' : '120px',
+                position: config.position,
                 isOpen
             };
             window.parent.postMessage(message, '*');
@@ -90,8 +92,9 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
         : {
             position: 'fixed',
             // Increase margin to prevent shadow clipping (48px)
+            // Tighten edge margin to 20px
             bottom: '48px',
-            [config.position === 'bottom-left' ? 'left' : 'right']: '48px',
+            [config.position === 'bottom-left' ? 'left' : 'right']: '20px',
             zIndex: 9999
         };
 
@@ -104,9 +107,9 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
         }
         : {
             position: 'fixed',
-            // Button (48) + Height (60) + Gap (16) = 124px
-            bottom: '124px',
-            [config.position === 'bottom-left' ? 'left' : 'right']: '48px',
+            // Gap above toggle button (48px bottom + 45px height + 17px gap = 110px)
+            bottom: '110px',
+            [config.position === 'bottom-left' ? 'left' : 'right']: '20px',
         };
 
     return (
@@ -194,7 +197,7 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                                 )}
                             </div>
                             <div>
-                                <h3 className="font-semibold" style={{ color: theme.headerText, fontSize: '16px' }}>
+                                <h3 className="font-semibold capitalize" style={{ color: theme.headerText, fontSize: '16px' }}>
                                     {config.bot_display_name}
                                 </h3>
                                 <p className="text-xs" style={{ color: theme.headerSubtext }}>
@@ -206,7 +209,7 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
 
                         <button
                             onClick={closeWidget}
-                            className="flex items-center justify-center w-8 h-8 rounded-lg transition-all duration-150"
+                            className="flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-200"
                             style={{
                                 background: theme.closeButtonBackground,
                                 border: theme.closeButtonBorder,
@@ -215,28 +218,19 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.background = theme.closeButtonHoverBackground;
                                 e.currentTarget.style.color = theme.closeButtonHoverText;
+                                e.currentTarget.style.transform = 'rotate(90deg)';
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.background = theme.closeButtonBackground;
                                 e.currentTarget.style.color = theme.closeButtonText;
+                                e.currentTarget.style.transform = 'rotate(0deg)';
                             }}
                         >
-                            ✕
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
 
-                    {/* Watermark - Mandatory */}
-                    <div className="pb-3 text-center">
-                        <a
-                            href="https://botblocks.ai"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] font-medium opacity-40 hover:opacity-80 transition-opacity no-underline"
-                            style={{ color: theme.inputText }}
-                        >
-                            ⚡ Powered by BotBlocks
-                        </a>
-                    </div>
+
 
                     {/* Messages */}
                     <div className="flex-1 p-5 overflow-y-auto flex flex-col gap-4" style={{
@@ -310,60 +304,73 @@ export function ChatWidget({ botId, config, previewMode = false }: ChatWidgetPro
                         )}
                     </div>
 
-                    {/* Input Area */}
-                    <div className="p-5 flex gap-3" style={{
+                    <div className="p-5 flex flex-col gap-3" style={{
                         background: theme.headerBackground,
                         backdropFilter: 'blur(10px)',
                         borderTop: theme.headerBorder
                     }}>
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                            placeholder="Type your message..."
-                            className="flex-1 px-3 py-2.5 rounded-xl outline-none transition-all duration-200"
-                            style={{
-                                background: theme.inputBackground,
-                                border: theme.inputBorder,
-                                borderRadius: theme.inputBorderRadius,
-                                color: theme.inputText,
-                                fontSize: '13.5px'
-                            }}
-                            onFocus={(e) => {
-                                e.currentTarget.style.borderColor = theme.inputFocusBorder;
-                                e.currentTarget.style.boxShadow = theme.inputFocusShadow;
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            }}
-                        />
-                        <button
-                            onClick={() => sendMessage()}
-                            disabled={!input.trim() || isLoading}
-                            className="px-4 py-2.5 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            style={{
-                                background: theme.sendButtonBackground,
-                                color: theme.sendButtonText,
-                                boxShadow: theme.sendButtonShadow,
-                                fontSize: '13.5px'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!e.currentTarget.disabled) {
-                                    e.currentTarget.style.background = theme.sendButtonHoverBackground;
-                                    e.currentTarget.style.boxShadow = theme.sendButtonHoverShadow;
-                                    e.currentTarget.style.transform = 'scale(1.05)';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = theme.sendButtonBackground;
-                                e.currentTarget.style.boxShadow = theme.sendButtonShadow;
-                                e.currentTarget.style.transform = 'scale(1)';
-                            }}
-                        >
-                            Send
-                        </button>
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                                placeholder="Type your message..."
+                                className="flex-1 px-4 py-3 rounded-2xl outline-none transition-all duration-200"
+                                style={{
+                                    background: theme.inputBackground,
+                                    border: theme.inputBorder,
+                                    borderRadius: theme.inputBorderRadius,
+                                    color: theme.inputText,
+                                    fontSize: '14px'
+                                }}
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = theme.inputFocusBorder;
+                                    e.currentTarget.style.boxShadow = theme.inputFocusShadow;
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                    e.currentTarget.style.boxShadow = 'none';
+                                }}
+                            />
+                            <button
+                                onClick={() => sendMessage()}
+                                disabled={!input.trim() || isLoading}
+                                className="w-12 h-12 flex items-center justify-center rounded-2xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                                style={{
+                                    background: theme.sendButtonBackground,
+                                    color: theme.sendButtonText,
+                                    boxShadow: theme.sendButtonShadow,
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!e.currentTarget.disabled) {
+                                        e.currentTarget.style.background = theme.sendButtonHoverBackground;
+                                        e.currentTarget.style.boxShadow = theme.sendButtonHoverShadow;
+                                        e.currentTarget.style.transform = 'scale(1.05) rotate(-10deg)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = theme.sendButtonBackground;
+                                    e.currentTarget.style.boxShadow = theme.sendButtonShadow;
+                                    e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
+                                }}
+                            >
+                                <Send className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {/* Relocated Watermark */}
+                        <div className="text-center pt-1">
+                            <a
+                                href="https://botblocks.ai"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[10px] font-bold opacity-30 hover:opacity-100 transition-all no-underline tracking-widest uppercase"
+                                style={{ color: theme.inputText }}
+                            >
+                                Powered by BotBlocks
+                            </a>
+                        </div>
                     </div>
                 </div>
             )}

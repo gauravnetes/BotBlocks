@@ -37,3 +37,13 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Professional Polish: Hide Dev Indicators */
+#nextjs-portal, 
+[data-nextjs-indicator], 
+[data-nextjs-toast],
+.__next-static-indicator-stack {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
