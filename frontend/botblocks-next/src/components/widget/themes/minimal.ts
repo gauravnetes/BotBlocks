@@ -1,124 +1,75 @@
-// Apple Transparent Liquid Glass Theme
+// Minimal Theme - iOS Liquid Glass (Apple Aesthetic - Rounded)
 import { hexToRgba } from './utils';
 
 export const minimalTheme = (primaryColor: string) => ({
-  name: 'minimal',
+   name: 'minimal',
 
-  /* ======================
-     MAIN GLASS WINDOW
-  ====================== */
+   // Container
+   windowBackground: 'rgba(255, 255, 255, 0.75)',
+   windowBorder: '1px solid rgba(255, 255, 255, 0.4)',
+   windowBorderRadius: '32px', // Max roundness
+   windowShadow: '0 20px 50px rgba(0, 0, 0, 0.1)',
+   backdropFilter: 'blur(20px) saturate(180%)',
 
-  // TRUE TRANSPARENCY
-  windowBackground: 'rgba(255,255,255,0.12)',
+   // Header
+   headerBackground: 'rgba(255, 255, 255, 0.5)',
+   headerBorder: '1px solid rgba(0, 0, 0, 0.05)',
+   headerText: '#1c1c1e',
+   headerSubtext: '#8e8e93',
 
-  // Edge highlight (Apple style)
-  windowBorder: '1px solid rgba(255,255,255,0.35)',
+   // Avatar
+   avatarBackground: '#f2f2f7',
+   avatarBorder: 'none',
+   avatarBorderRadius: '50%',
 
-  windowBorderRadius: '26px',
+   // Toggle Button
+   toggleBackground: 'rgba(255, 255, 255, 0.8)',
+   toggleBorder: '1px solid rgba(0, 0, 0, 0.05)',
+   toggleShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+   toggleHoverShadow: '0 8px 20px rgba(0, 0, 0, 0.12)',
+   toggleHoverBorder: 'transparent',
 
-  // VERY minimal shadow (almost invisible)
-  windowShadow: '0 6px 18px rgba(0,0,0,0.12)',
+   // Messages
+   botMessageBackground: '#ffffff',
+   botMessageBorder: 'none',
+   botMessageText: '#1c1c1e',
+   botMessageShadow: '0 2px 4px rgba(0, 0, 0, 0.02)',
 
-  // THIS IS THE MAGIC
-  backdropFilter: 'blur(36px) saturate(200%)',
+   userMessageBackground: '#007AFF',
+   userMessageBorder: 'none',
+   userMessageText: '#ffffff',
+   userMessageShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
 
-  /* ======================
-     HEADER
-  ====================== */
-  headerBackground: 'transparent',
-  headerBorder: 'none',
-  headerText: '#ffffff',
-  headerSubtext: 'rgba(255,255,255,0.6)',
+   messageBorderRadius: '22px', // Super round
 
-  /* ======================
-     AVATAR (GLASS ORB)
-  ====================== */
-  avatarBackground: 'rgba(255,255,255,0.35)',
-  avatarBorder: '1px solid rgba(255,255,255,0.45)',
-  avatarBorderRadius: '50%',
+   // Input
+   inputBackground: 'rgba(255, 255, 255, 0.6)',
+   inputBorder: '1px solid rgba(0, 0, 0, 0.05)',
+   inputBorderRadius: '26px', // Maximum pill
+   inputText: '#1c1c1e',
+   inputPlaceholder: '#aeaeb2',
+   inputFocusBorder: 'rgba(0, 0, 0, 0.1)',
+   inputFocusShadow: 'none',
 
-  /* ======================
-     TOGGLE BUTTON (FLOATING GLASS)
-  ====================== */
-  toggleBackground: 'rgba(255,255,255,0.25)',
-  toggleBorder: '1px solid rgba(255,255,255,0.45)',
-  toggleShadow: '0 6px 18px rgba(0,0,0,0.15)',
-  toggleHoverShadow: `0 10px 28px ${hexToRgba(primaryColor, 0.25)}`,
-  toggleHoverBorder: hexToRgba(primaryColor, 0.4),
+   // Send Button
+   sendButtonBackground: '#1c1c1e',
+   sendButtonText: '#ffffff',
+   sendButtonShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+   sendButtonHoverBackground: '#3a3a3c',
+   sendButtonHoverShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
 
-  /* ======================
-     BOT MESSAGE (FROSTED GLASS)
-  ====================== */
-  botMessageBackground: 'rgba(255,255,255,0.35)',
-  botMessageBorder: '1px solid rgba(255,255,255,0.45)',
-  botMessageText: '#ffffff',
+   // Close Button
+   closeButtonBackground: '#e5e5ea',
+   closeButtonBorder: 'none',
+   closeButtonText: '#8e8e93',
+   closeButtonHoverBackground: '#d1d1d6',
+   closeButtonHoverText: '#1c1c1e',
 
-  // Apple uses INNER highlight instead of shadow
-  botMessageShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
+   // Scrollbar
+   scrollbarTrack: 'transparent',
+   scrollbarThumb: 'rgba(0, 0, 0, 0.2)',
 
-  /* ======================
-     USER MESSAGE (TINTED GLASS)
-  ====================== */
-  userMessageBackground: hexToRgba(primaryColor, 0.35),
-  userMessageBorder: `1px solid ${hexToRgba(primaryColor, 0.45)}`,
-  userMessageText: '#ffffff',
-  userMessageShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
-
-  messageBorderRadius: '22px',
-
-  /* ======================
-     INPUT (GLASS BAR)
-  ====================== */
-  inputBackground: 'rgba(255,255,255,0.25)',
-  inputBorder: '1px solid rgba(255,255,255,0.45)',
-  inputBorderRadius: '22px',
-  inputText: '#ffffff',
-  inputPlaceholder: 'rgba(255,255,255,0.6)',
-
-  inputFocusBorder: hexToRgba(primaryColor, 0.45),
-  inputFocusShadow: `0 0 0 3px ${hexToRgba(primaryColor, 0.2)}`,
-
-  /* ======================
-     SEND BUTTON (GLOSSY GLASS)
-  ====================== */
-  sendButtonBackground: `
-    linear-gradient(
-      180deg,
-      ${hexToRgba(primaryColor, 0.9)},
-      ${hexToRgba(primaryColor, 0.7)}
-    )
-  `,
-  sendButtonText: '#ffffff',
-
-  // NO heavy shadow
-  sendButtonShadow: 'inset 0 1px 0 rgba(255,255,255,0.6)',
-  sendButtonHoverBackground: `
-    linear-gradient(
-      180deg,
-      ${hexToRgba(primaryColor, 1)},
-      ${hexToRgba(primaryColor, 0.85)}
-    )
-  `,
-  sendButtonHoverShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
-
-  /* ======================
-     CLOSE BUTTON
-  ====================== */
-  closeButtonBackground: 'rgba(255,255,255,0.3)',
-  closeButtonBorder: '1px solid rgba(255,255,255,0.45)',
-  closeButtonText: '#ffffff',
-  closeButtonHoverBackground: 'rgba(255,255,255,0.5)',
-  closeButtonHoverText: '#ffffff',
-
-  /* ======================
-     SCROLLBAR
-  ====================== */
-  scrollbarTrack: 'transparent',
-  scrollbarThumb: 'rgba(255,255,255,0.25)',
-
-  /* ======================
-     STATUS DOT
-  ====================== */
-  statusIndicatorOnline: '#22c55e',
-  statusIndicatorOffline: '#ef4444',
+   // Status Indicator
+   statusIndicatorOnline: '#34c759',
+   statusIndicatorOffline: '#ff3b30',
 });

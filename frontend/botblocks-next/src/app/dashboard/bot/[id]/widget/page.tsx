@@ -5,6 +5,7 @@ import { getBot, getWidgetConfig, updateWidgetConfig, Bot } from "@/lib/api";
 import { WidgetCustomizer } from "@/components/dashboard/WidgetCustomizer";
 import { WidgetPreview } from "@/components/dashboard/WidgetPreview";
 import { useParams } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 export default function WidgetPage() {
     const params = useParams();
@@ -28,9 +29,12 @@ export default function WidgetPage() {
         }
     }, [params.id]);
 
+    const { getToken } = useAuth();
+
     const handleWidgetUpdate = async (config: any) => {
         if (!bot) return;
-        await updateWidgetConfig(bot.public_id, config);
+        const token = await getToken();
+        await updateWidgetConfig(bot.public_id, config, token);
         setWidgetConfig(config);
         setLastWidgetUpdate(Date.now());
     };

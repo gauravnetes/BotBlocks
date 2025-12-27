@@ -32,28 +32,10 @@ export function Hero() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="relative"
+                    className="relative hidden lg:block"
                 >
-                    {/* Chat Visual Card */}
-                    <div className="bg-zinc-900/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl">
-                        <div className="flex items-center gap-4 mb-6 border-b border-white/5 pb-4">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-xl">🤖</div>
-                            <div>
-                                <div className="font-semibold text-white">Support Bot</div>
-                                <div className="flex items-center gap-1.5 text-xs text-green-500">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" /> Online
-                                </div>
-                            </div>
-                        </div>
-                        <div className="space-y-4">
-                            <div className="self-end bg-blue-600 text-white p-3 rounded-2xl rounded-tr-sm max-w-[80%] ml-auto">
-                                How do I connect my Notion knowledge base?
-                            </div>
-                            <div className="self-start bg-white/5 text-zinc-200 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-white/5">
-                                It's easy! Just go to the "Knowledge" tab, click "Add Source", and select Notion. I'll automatically index your pages. 📚
-                            </div>
-                        </div>
-                    </div>
+                    {/* Vacant space for LandingBot placement reference if needed, or just empty */}
+                    <div className="min-h-[600px] w-full" />
                 </motion.div>
             </div>
         </section>

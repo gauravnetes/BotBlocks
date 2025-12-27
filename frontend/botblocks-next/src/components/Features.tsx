@@ -1,4 +1,6 @@
+'use client'
 import { Database, Settings, Rocket } from "lucide-react";
+import FlowingMenu from "./ui/FlowingMenu";
 
 const features = [
     {
@@ -18,9 +20,18 @@ const features = [
     },
 ];
 
+const demoItems = [
+  { link: '#', text: 'Mojave', image: 'https://picsum.photos/600/400?random=1' },
+  { link: '#', text: 'Sonoma', image: 'https://picsum.photos/600/400?random=2' },
+  { link: '#', text: 'Monterey', image: 'https://picsum.photos/600/400?random=3' },
+  { link: '#', text: 'Sequoia', image: 'https://picsum.photos/600/400?random=4' }
+];
+
 export function Features() {
     return (
         <section className="py-32 container mx-auto px-6">
+          
+
             <div className="text-center mb-16">
                 <h2 className="text-4xl font-bold text-white mb-4">How BotBlocks Works</h2>
                 <p className="text-zinc-400 max-w-2xl mx-auto">
@@ -37,6 +48,9 @@ export function Features() {
                         <p className="text-zinc-400 leading-relaxed">{f.desc}</p>
                     </div>
                 ))}
+            </div>
+            <div style={{ height: '600px', position: 'relative' }}>
+                <FlowingMenu items={demoItems} />
             </div>
         </section>
     );

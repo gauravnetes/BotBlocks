@@ -43,7 +43,8 @@ if "sqlite" in DATABASE_URL:
 # --- 4. CREATE ENGINE ---
 engine = create_engine(
     DATABASE_URL, 
-    connect_args=connect_args
+    connect_args=connect_args,
+    pool_pre_ping=True
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

@@ -1,73 +1,73 @@
-// Modern Theme - Liquid Glass Effect
+// Modern Theme - BotBlocks Gen Z (High Contrast, Rounded)
 import { hexToRgba } from './utils';
 
 export const modernTheme = (primaryColor: string) => ({
     name: 'modern',
 
     // Container
-    windowBackground: 'rgba(10, 10, 10, 0.85)',
-    windowBorder: '1px solid rgba(255, 255, 255, 0.1)',
-    windowBorderRadius: '24px',
-    windowShadow: `0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 0 0 1px rgba(255, 255, 255, 0.05)`,
-    backdropFilter: 'blur(40px) saturate(180%)',
+    windowBackground: '#09090b', // zinc-950
+    windowBorder: '1px solid #27272a', // zinc-800
+    windowBorderRadius: '30px', // Super rounded
+    windowShadow: '0 0 0 1px #000000, 0 12px 40px rgba(0,0,0,0.4)',
+    backdropFilter: 'none',
 
     // Header
-    headerBackground: 'rgba(15, 15, 15, 0.5)',
-    headerBorder: '1px solid rgba(255, 255, 255, 0.05)',
+    headerBackground: 'transparent',
+    headerBorder: '1px solid #27272a',
     headerText: '#ffffff',
-    headerSubtext: 'rgba(255, 255, 255, 0.5)',
+    headerSubtext: '#a1a1aa', // zinc-400
 
     // Avatar
-    avatarBackground: hexToRgba(primaryColor, 0.1),
-    avatarBorder: `1px solid ${hexToRgba(primaryColor, 0.3)}`,
-    avatarBorderRadius: '12px',
+    avatarBackground: '#18181b', // zinc-900
+    avatarBorder: '1px solid #27272a',
+    avatarBorderRadius: '50%', // Circle for roundness
 
     // Toggle Button
-    toggleBackground: 'rgba(15, 15, 15, 0.8)',
-    toggleBorder: '1px solid rgba(255, 255, 255, 0.1)',
-    toggleShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
-    toggleHoverShadow: `0 12px 40px ${hexToRgba(primaryColor, 0.3)}, inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
-    toggleHoverBorder: hexToRgba(primaryColor, 0.4),
+    toggleBackground: '#000000',
+    toggleBorder: '1px solid #27272a',
+    toggleShadow: '0 4px 12px rgba(0,0,0,0.2)',
+    toggleHoverShadow: '0 8px 24px rgba(0,0,0,0.4)',
+    toggleHoverBorder: '#ffffff',
 
     // Messages
-    botMessageBackground: 'rgba(255, 255, 255, 0.05)',
-    botMessageBorder: '1px solid rgba(255, 255, 255, 0.1)',
-    botMessageText: '#e0e0e0',
-    botMessageShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+    botMessageBackground: '#18181b', // zinc-900
+    botMessageBorder: '1px solid #27272a',
+    botMessageText: '#ffffff',
+    botMessageShadow: 'none',
 
-    userMessageBackground: hexToRgba(primaryColor, 0.15),
-    userMessageBorder: `1px solid ${hexToRgba(primaryColor, 0.3)}`,
-    userMessageText: '#ffffff',
-    userMessageShadow: `0 4px 16px ${hexToRgba(primaryColor, 0.2)}`,
+    userMessageBackground: '#ffffff', // Pure white pop
+    userMessageBorder: 'none',
+    userMessageText: '#000000',
+    userMessageShadow: '0 2px 8px rgba(0,0,0,0.1)',
 
-    messageBorderRadius: '16px',
+    messageBorderRadius: '20px', // Rounder bubbles
 
     // Input
-    inputBackground: 'rgba(255, 255, 255, 0.05)',
-    inputBorder: '1px solid rgba(255, 255, 255, 0.1)',
-    inputBorderRadius: '14px',
+    inputBackground: '#18181b',
+    inputBorder: '1px solid #27272a',
+    inputBorderRadius: '24px', // Pill shape
     inputText: '#ffffff',
-    inputPlaceholder: 'rgba(255, 255, 255, 0.4)',
-    inputFocusBorder: hexToRgba(primaryColor, 0.5),
-    inputFocusShadow: `0 0 0 3px ${hexToRgba(primaryColor, 0.1)}`,
+    inputPlaceholder: '#71717a',
+    inputFocusBorder: '#52525b',
+    inputFocusShadow: 'none',
 
     // Send Button
-    sendButtonBackground: primaryColor,
-    sendButtonText: '#ffffff',
-    sendButtonShadow: `0 4px 16px ${hexToRgba(primaryColor, 0.3)}`,
-    sendButtonHoverBackground: primaryColor, // Ideally darken this slightly
-    sendButtonHoverShadow: `0 6px 20px ${hexToRgba(primaryColor, 0.4)}`,
+    sendButtonBackground: '#ffffff',
+    sendButtonText: '#000000',
+    sendButtonShadow: 'none',
+    sendButtonHoverBackground: '#e4e4e7',
+    sendButtonHoverShadow: 'none',
 
     // Close Button
-    closeButtonBackground: 'rgba(255, 255, 255, 0.05)',
-    closeButtonBorder: '1px solid rgba(255, 255, 255, 0.1)',
-    closeButtonText: 'rgba(255, 255, 255, 0.7)',
-    closeButtonHoverBackground: 'rgba(255, 255, 255, 0.1)',
+    closeButtonBackground: '#18181b',
+    closeButtonBorder: 'none',
+    closeButtonText: '#a1a1aa',
+    closeButtonHoverBackground: '#27272a',
     closeButtonHoverText: '#ffffff',
 
     // Scrollbar
     scrollbarTrack: 'transparent',
-    scrollbarThumb: 'rgba(255, 255, 255, 0.1)',
+    scrollbarThumb: '#3f3f46',
 
     // Status Indicator
     statusIndicatorOnline: '#10b981',
