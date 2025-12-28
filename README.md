@@ -58,7 +58,7 @@ BotBlocks is a comprehensive chatbot-as-a-service platform that enables business
 > **File:** `screenshots/landing-page2.png`
 >
 
-![Landing Page](https://via.placeholder.com/1920x1080/0f766e/ffffff?text=Landing+Page+-+Hero+Section)
+![Landing Page](https://i.ibb.co/xSyf6CyR/landing-page1.png)
 
 ### Bot Dashboard
 > **[SCREENSHOT PLACEHOLDER]**
@@ -66,35 +66,35 @@ BotBlocks is a comprehensive chatbot-as-a-service platform that enables business
 > **File:** `screenshots/dashboard.png`
 > 
 
-![Bot Dashboard](https://via.placeholder.com/1920x1080/ffffff/333333?text=Dashboard+-+Bot+List+%26+Stats)
+![Bot Dashboard](https://i.ibb.co/XxmYf4TR/dashboard.png)
 
 ### Knowledge Base Management
 > 
 > **File:** `screenshots/knowledge-base.png`
 > 
 
-![Knowledge Base](https://via.placeholder.com/1920x1080/ffffff/333333?text=Knowledge+Base+-+File+Upload+%26+Management)
+![Knowledge Base](https://i.ibb.co/LDzQhXbv/knowledge-base.png)
 
 ### Analytics Dashboard
 > 
 > **File:** `screenshots/analytics.png`
 > 
 
-![Analytics](https://via.placeholder.com/1920x1080/ffffff/333333?text=Analytics+-+Health+Score+%26+Insights)
+![Analytics](https://i.ibb.co/fcRhy5b/analytics.png)
 
 ### Widget Customization
 > 
 > **File:** `screenshots/widget-config.png`
 > 
 
-![Widget Customization](https://via.placeholder.com/1920x1080/ffffff/333333?text=Widget+Settings+-+Customization+Preview)
+![Widget Customization](https://i.ibb.co/TBRqzsP0/widget-config.png)
 
 ### Live Chat Example
 > 
 > **File:** `screenshots/chat-example.png`
 > 
 
-![Live Chat](https://via.placeholder.com/1920x1080/ffffff/333333?text=Live+Chat+-+Multilingual+Conversation)
+![Live Chat](https://i.ibb.co/hRm9t2Zq/chat-example.png)
 
 ### Knowledge Gap Insights
 > 
@@ -103,7 +103,7 @@ BotBlocks is a comprehensive chatbot-as-a-service platform that enables business
 > **File:** `screenshots/knowledge-gap2.png`
 > 
 
-![Knowledge Gaps](https://via.placeholder.com/1920x1080/ffffff/333333?text=Knowledge+Gaps+-+AI+Insights)
+![Knowledge Gaps](https://i.ibb.co/Rpyky1r1/knowledge-gap1.png)
 
 ---
 
