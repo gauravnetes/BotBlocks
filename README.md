@@ -53,15 +53,10 @@ BotBlocks is a comprehensive chatbot-as-a-service platform that enables business
 ## 📸 Screenshots
 
 ### Landing Page
-> **[SCREENSHOT PLACEHOLDER]**
 > 
-> **File:** `screenshots/landing-page.png`
-> 
-> **What to show:**
-> - Hero section with main value proposition
-> - "Create Your Bot in 60 Seconds" CTA
-> - Feature cards (RAG, Multilingual, Analytics)
-> - Pricing tiers or demo video
+> **File:** `screenshots/landing-page1.png`
+> **File:** `screenshots/landing-page2.png`
+>
 
 ![Landing Page](https://via.placeholder.com/1920x1080/0f766e/ffffff?text=Landing+Page+-+Hero+Section)
 
@@ -70,80 +65,43 @@ BotBlocks is a comprehensive chatbot-as-a-service platform that enables business
 > 
 > **File:** `screenshots/dashboard.png`
 > 
-> **What to show:**
-> - List of user's bots with health scores
-> - Quick stats (Total Queries, Success Rate, Active Bots)
-> - "Create New Bot" button prominently displayed
-> - Recent activity feed
 
 ![Bot Dashboard](https://via.placeholder.com/1920x1080/ffffff/333333?text=Dashboard+-+Bot+List+%26+Stats)
 
 ### Knowledge Base Management
-> **[SCREENSHOT PLACEHOLDER]**
 > 
 > **File:** `screenshots/knowledge-base.png`
 > 
-> **What to show:**
-> - File upload interface with drag-and-drop
-> - List of uploaded documents with size and date
-> - Web scraping URL input field
-> - Progress indicator for document processing
-> - Delete/manage document actions
 
 ![Knowledge Base](https://via.placeholder.com/1920x1080/ffffff/333333?text=Knowledge+Base+-+File+Upload+%26+Management)
 
 ### Analytics Dashboard
-> **[SCREENSHOT PLACEHOLDER]**
 > 
 > **File:** `screenshots/analytics.png`
 > 
-> **What to show:**
-> - Health score gauge (0-100)
-> - Query volume chart (line graph over time)
-> - Knowledge gaps section with AI insights
-> - Top failed queries list
-> - Success rate percentage
 
 ![Analytics](https://via.placeholder.com/1920x1080/ffffff/333333?text=Analytics+-+Health+Score+%26+Insights)
 
 ### Widget Customization
-> **[SCREENSHOT PLACEHOLDER]**
 > 
-> **File:** `screenshots/widget-settings.png`
+> **File:** `screenshots/widget-config.png`
 > 
-> **What to show:**
-> - Live preview of chatbot widget
-> - Color picker for theme customization
-> - Position selector (bottom-right, bottom-left)
-> - Welcome message editor
-> - Embed code snippet
 
 ![Widget Customization](https://via.placeholder.com/1920x1080/ffffff/333333?text=Widget+Settings+-+Customization+Preview)
 
 ### Live Chat Example
-> **[SCREENSHOT PLACEHOLDER]**
 > 
 > **File:** `screenshots/chat-example.png`
 > 
-> **What to show:**
-> - Embedded widget on a sample website
-> - Conversation showing multilingual support
-> - Language indicator badges
-> - Source citations in responses
-> - Typing indicator
 
 ![Live Chat](https://via.placeholder.com/1920x1080/ffffff/333333?text=Live+Chat+-+Multilingual+Conversation)
 
 ### Knowledge Gap Insights
-> **[SCREENSHOT PLACEHOLDER]**
 > 
-> **File:** `screenshots/knowledge-gaps.png`
+> **File:** `screenshots/knowledge-gap.png`
+> **File:** `screenshots/knowledge-gap1.png`
+> **File:** `screenshots/knowledge-gap2.png`
 > 
-> **What to show:**
-> - AI-generated insights about missing topics
-> - Clustered failed queries
-> - Recommendations for new documents to upload
-> - Priority indicators (high/medium/low)
 
 ![Knowledge Gaps](https://via.placeholder.com/1920x1080/ffffff/333333?text=Knowledge+Gaps+-+AI+Insights)
 
