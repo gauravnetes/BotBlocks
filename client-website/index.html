@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NexusFlow - Modern SaaS Platform</title>
+    <title>TechGear Pro - Premium Electronics Store</title>
     <style>
         * {
             margin: 0;
@@ -66,19 +66,34 @@
             color: #00ff87;
         }
 
-        .nav-cta {
-            background: #00ff87;
-            color: #000;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: transform 0.3s, box-shadow 0.3s;
+        .nav-icons {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
         }
 
-        .nav-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 135, 0.3);
+        .icon-btn {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            color: #00ff87;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #00ff87;
             color: #000;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
         }
 
         /* Hero */
@@ -128,13 +143,6 @@
             margin-right: auto;
         }
 
-        .hero-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
         .btn-primary {
             background: #00ff87;
             color: #000;
@@ -145,6 +153,7 @@
             font-size: 1.1rem;
             transition: all 0.3s;
             border: 2px solid #00ff87;
+            display: inline-block;
         }
 
         .btn-primary:hover {
@@ -152,29 +161,10 @@
             box-shadow: 0 15px 40px rgba(0, 255, 135, 0.4);
         }
 
-        .btn-secondary {
-            background: transparent;
-            color: #fff;
-            padding: 1rem 2.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.1rem;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s;
-        }
-
-        .btn-secondary:hover {
-            border-color: #00ff87;
-            color: #00ff87;
-            transform: translateY(-3px);
-        }
-
-        /* Features */
-        .features {
-            padding: 120px 2rem;
+        /* Categories */
+        .categories {
+            padding: 80px 2rem;
             background: #0a0a0a;
-            position: relative;
         }
 
         .container {
@@ -184,7 +174,7 @@
 
         .section-header {
             text-align: center;
-            margin-bottom: 5rem;
+            margin-bottom: 4rem;
         }
 
         .section-badge {
@@ -200,256 +190,237 @@
         }
 
         .section-title {
-            font-size: 3.5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
             font-weight: 800;
         }
 
-        .section-subtitle {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.6);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .features-grid {
+        .categories-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
         }
 
-        .feature-card {
+        .category-card {
             background: rgba(255, 255, 255, 0.03);
-            padding: 3rem;
+            padding: 3rem 2rem;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
             transition: all 0.4s;
-            position: relative;
-            overflow: hidden;
+            cursor: pointer;
         }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #00ff87, transparent);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-
-        .feature-card:hover {
+        .category-card:hover {
             background: rgba(255, 255, 255, 0.05);
             border-color: rgba(0, 255, 135, 0.3);
             transform: translateY(-8px);
         }
 
-        .feature-card:hover::before {
-            opacity: 1;
-        }
-
-        .feature-icon {
+        .category-icon {
             font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            display: block;
-        }
-
-        .feature-card h3 {
-            font-size: 1.6rem;
             margin-bottom: 1rem;
-            font-weight: 700;
         }
 
-        .feature-card p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 1.05rem;
-            line-height: 1.7;
+        .category-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
         }
 
-        /* Pricing */
-        .pricing {
-            padding: 120px 2rem;
+        .category-card p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* Products */
+        .products {
+            padding: 100px 2rem;
             background: #000;
         }
 
-        .pricing-grid {
+        .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
-        .pricing-card {
+        .product-card {
             background: rgba(255, 255, 255, 0.03);
-            padding: 3rem;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
             transition: all 0.4s;
-            position: relative;
+            cursor: pointer;
         }
 
-        .pricing-card.featured {
-            border-color: #00ff87;
-            background: rgba(0, 255, 135, 0.05);
-            transform: scale(1.05);
-        }
-
-        .pricing-card.featured .pricing-badge {
-            display: block;
-        }
-
-        .pricing-badge {
-            display: none;
-            position: absolute;
-            top: -12px;
-            right: 30px;
-            background: #00ff87;
-            color: #000;
-            padding: 0.4rem 1.2rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
-        .pricing-card:hover {
+        .product-card:hover {
             transform: translateY(-8px);
             border-color: rgba(0, 255, 135, 0.3);
         }
 
-        .pricing-card.featured:hover {
-            transform: scale(1.08) translateY(-8px);
+        .product-image {
+            height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            position: relative;
         }
 
-        .pricing-card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .pricing-card .price {
-            font-size: 3.5rem;
-            font-weight: 800;
-            margin: 1.5rem 0;
-        }
-
-        .pricing-card .price span {
-            font-size: 1.2rem;
-            color: rgba(255, 255, 255, 0.5);
-            font-weight: 400;
-        }
-
-        .pricing-features {
-            list-style: none;
-            margin: 2rem 0;
-        }
-
-        .pricing-features li {
-            padding: 0.8rem 0;
-            color: rgba(255, 255, 255, 0.7);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .pricing-features li:last-child {
-            border-bottom: none;
-        }
-
-        .pricing-features li::before {
-            content: '✓';
-            color: #00ff87;
-            font-weight: bold;
-            margin-right: 1rem;
-        }
-
-        .pricing-btn {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 700;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s;
-            margin-top: 2rem;
-        }
-
-        .pricing-btn:hover {
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
             background: #00ff87;
             color: #000;
-            border-color: #00ff87;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
         }
 
-        /* Stats */
-        .stats {
+        .product-info {
+            padding: 2rem;
+        }
+
+        .product-category {
+            color: #00ff87;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .product-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #00ff87;
+        }
+
+        .add-to-cart {
+            background: rgba(0, 255, 135, 0.1);
+            color: #00ff87;
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            padding: 0.7rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: #00ff87;
+            color: #000;
+        }
+
+        /* Features */
+        .features {
             padding: 100px 2rem;
             background: #0a0a0a;
         }
 
-        .stats-grid {
+        .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
             text-align: center;
         }
 
-        .stat-item h3 {
-            font-size: 4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #00ff87 0%, #60efff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
+        .feature-item {
+            padding: 2rem;
         }
 
-        .stat-item p {
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-item p {
             color: rgba(255, 255, 255, 0.6);
-            font-size: 1.2rem;
         }
 
-        /* CTA Section */
-        .cta-section {
-            padding: 120px 2rem;
+        /* Newsletter */
+        .newsletter {
+            padding: 100px 2rem;
             background: #000;
             text-align: center;
-            position: relative;
         }
 
-        .cta-section::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(96, 239, 255, 0.1) 0%, transparent 70%);
-            pointer-events: none;
-        }
-
-        .cta-content {
-            position: relative;
-            z-index: 1;
-            max-width: 800px;
+        .newsletter-content {
+            max-width: 600px;
             margin: 0 auto;
         }
 
-        .cta-content h2 {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
+        .newsletter h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
             font-weight: 800;
         }
 
-        .cta-content p {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 3rem;
+        .newsletter p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 2rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .newsletter-form input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .newsletter-form button {
+            background: #00ff87;
+            color: #000;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .newsletter-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 135, 0.3);
         }
 
         /* Footer */
@@ -493,32 +464,6 @@
             color: rgba(255, 255, 255, 0.4);
         }
 
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .social-links a {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .social-links a:hover {
-            background: #00ff87;
-            color: #000;
-            border-color: #00ff87;
-            transform: translateY(-3px);
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             nav ul {
                 gap: 1.5rem;
@@ -528,221 +473,277 @@
                 font-size: 2.8rem;
             }
 
-            .hero p {
-                font-size: 1.1rem;
-            }
-
             .section-title {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
             }
 
-            .features-grid,
-            .pricing-grid {
+            .products-grid {
                 grid-template-columns: 1fr;
             }
 
-            .pricing-card.featured {
-                transform: scale(1);
+            .newsletter-form {
+                flex-direction: column;
             }
+        }
+
+        /* Chatbot Button */
+        .chatbot-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #00ff87;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 255, 135, 0.4);
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .chatbot-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 255, 135, 0.6);
         }
     </style>
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">NexusFlow</div>
+            <div class="logo">TechGear Pro</div>
             <ul>
                 <li><a href="#home">Home</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="#contact" class="nav-cta">Start Free Trial</a></li>
+                <li><a href="#products">Products</a></li>
+                <li><a href="#categories">Categories</a></li>
+                <li><a href="#about">About</a></li>
             </ul>
+            <div class="nav-icons">
+                <span class="icon-btn">🔍</span>
+                <span class="icon-btn">👤</span>
+                <span class="icon-btn">
+                    🛒
+                    <span class="cart-count">0</span>
+                </span>
+            </div>
         </nav>
     </header>
 
     <section class="hero" id="home">
         <div class="hero-content">
-            <h1>The SaaS Platform Built for <span class="highlight">Scale</span></h1>
-            <p>Streamline your workflows, automate processes, and grow your business with the most powerful all-in-one platform for modern teams</p>
-            <div class="hero-buttons">
-                <a href="#pricing" class="btn-primary">Get Started Free</a>
-                <a href="#features" class="btn-secondary">See How It Works</a>
-            </div>
+            <h1>Premium Tech at <span class="highlight">Unbeatable</span> Prices</h1>
+            <p>Discover the latest gadgets, electronics, and accessories from top brands. Quality guaranteed, shipped worldwide.</p>
+            <a href="#products" class="btn-primary">Shop Now</a>
         </div>
     </section>
 
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <h3>10K+</h3>
-                    <p>Active Users</p>
-                </div>
-                <div class="stat-item">
-                    <h3>99.9%</h3>
-                    <p>Uptime SLA</p>
-                </div>
-                <div class="stat-item">
-                    <h3>500M+</h3>
-                    <p>API Requests Daily</p>
-                </div>
-                <div class="stat-item">
-                    <h3>150+</h3>
-                    <p>Countries</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features" id="features">
+    <section class="categories" id="categories">
         <div class="container">
             <div class="section-header">
-                <span class="section-badge">FEATURES</span>
-                <h2 class="section-title">Everything You Need to Succeed</h2>
-                <p class="section-subtitle">Powerful features designed to help you work smarter, not harder</p>
+                <span class="section-badge">CATEGORIES</span>
+                <h2 class="section-title">Shop by Category</h2>
             </div>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">💻</div>
+                    <h3>Laptops</h3>
+                    <p>120+ Products</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📱</div>
+                    <h3>Smartphones</h3>
+                    <p>200+ Products</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🎧</div>
+                    <h3>Audio</h3>
+                    <p>150+ Products</p>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">⌚</div>
+                    <h3>Wearables</h3>
+                    <p>80+ Products</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="products" id="products">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">FEATURED</span>
+                <h2 class="section-title">Trending Products</h2>
+            </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image">
+                        💻
+                        <span class="product-badge">NEW</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Laptops</div>
+                        <h3>UltraBook Pro X1</h3>
+                        <p>16GB RAM, 512GB SSD, Intel i7 Processor</p>
+                        <div class="product-footer">
+                            <div class="product-price">$1,299</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        📱
+                        <span class="product-badge">SALE</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Smartphones</div>
+                        <h3>SmartPhone Z9</h3>
+                        <p>6.5" OLED, 128GB, 5G Ready</p>
+                        <div class="product-footer">
+                            <div class="product-price">$899</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        🎧
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Audio</div>
+                        <h3>Wireless Headphones Pro</h3>
+                        <p>ANC, 40hr Battery, Premium Sound</p>
+                        <div class="product-footer">
+                            <div class="product-price">$349</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        ⌚
+                        <span class="product-badge">HOT</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Wearables</div>
+                        <h3>SmartWatch Elite</h3>
+                        <p>Fitness Tracking, GPS, Water Resistant</p>
+                        <div class="product-footer">
+                            <div class="product-price">$449</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        🖥️
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Accessories</div>
+                        <h3>4K Monitor Ultra</h3>
+                        <p>27" IPS, HDR, 144Hz Refresh Rate</p>
+                        <div class="product-footer">
+                            <div class="product-price">$599</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">
+                        📷
+                        <span class="product-badge">NEW</span>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">Cameras</div>
+                        <h3>Mirrorless Camera Pro</h3>
+                        <p>24MP, 4K Video, Professional Grade</p>
+                        <div class="product-footer">
+                            <div class="product-price">$1,899</div>
+                            <button class="add-to-cart">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="about">
+        <div class="container">
             <div class="features-grid">
-                <div class="feature-card">
-                    <span class="feature-icon">⚡</span>
-                    <h3>Lightning Fast</h3>
-                    <p>Experience blazing-fast performance with our optimized infrastructure built for speed and reliability</p>
+                <div class="feature-item">
+                    <div class="feature-icon">🚚</div>
+                    <h3>Free Shipping</h3>
+                    <p>On orders over $100</p>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🔒</span>
-                    <h3>Enterprise Security</h3>
-                    <p>Bank-level encryption and security protocols to keep your data safe and compliant</p>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Payment</h3>
+                    <p>100% secure transactions</p>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🤖</span>
-                    <h3>AI-Powered Insights</h3>
-                    <p>Leverage advanced AI to get actionable insights and automate repetitive tasks</p>
+                <div class="feature-item">
+                    <div class="feature-icon">↩️</div>
+                    <h3>Easy Returns</h3>
+                    <p>30-day return policy</p>
                 </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🔗</span>
-                    <h3>Seamless Integrations</h3>
-                    <p>Connect with 100+ tools you already use through our powerful API and integrations</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">📊</span>
-                    <h3>Advanced Analytics</h3>
-                    <p>Real-time dashboards and reports to track performance and make data-driven decisions</p>
-                </div>
-                <div class="feature-card">
-                    <span class="feature-icon">🌐</span>
-                    <h3>Global CDN</h3>
-                    <p>Deliver content at lightning speed with our worldwide content delivery network</p>
+                <div class="feature-item">
+                    <div class="feature-icon">💬</div>
+                    <h3>24/7 Support</h3>
+                    <p>Always here to help</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="pricing" id="pricing">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">PRICING</span>
-                <h2 class="section-title">Simple, Transparent Pricing</h2>
-                <p class="section-subtitle">Choose the plan that fits your needs</p>
-            </div>
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <h3>Starter</h3>
-                    <div class="price">$29<span>/month</span></div>
-                    <ul class="pricing-features">
-                        <li>Up to 10 team members</li>
-                        <li>10GB storage</li>
-                        <li>Basic analytics</li>
-                        <li>Email support</li>
-                        <li>Core integrations</li>
-                    </ul>
-                    <a href="#" class="pricing-btn">Start Free Trial</a>
-                </div>
-                <div class="pricing-card featured">
-                    <span class="pricing-badge">MOST POPULAR</span>
-                    <h3>Professional</h3>
-                    <div class="price">$99<span>/month</span></div>
-                    <ul class="pricing-features">
-                        <li>Up to 50 team members</li>
-                        <li>100GB storage</li>
-                        <li>Advanced analytics</li>
-                        <li>Priority support</li>
-                        <li>All integrations</li>
-                        <li>Custom workflows</li>
-                        <li>API access</li>
-                    </ul>
-                    <a href="#" class="pricing-btn">Start Free Trial</a>
-                </div>
-                <div class="pricing-card">
-                    <h3>Enterprise</h3>
-                    <div class="price">Custom</div>
-                    <ul class="pricing-features">
-                        <li>Unlimited team members</li>
-                        <li>Unlimited storage</li>
-                        <li>Custom analytics</li>
-                        <li>24/7 dedicated support</li>
-                        <li>Custom integrations</li>
-                        <li>Advanced security</li>
-                        <li>SLA guarantee</li>
-                        <li>Dedicated account manager</li>
-                    </ul>
-                    <a href="#" class="pricing-btn">Contact Sales</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="cta-section" id="contact">
-        <div class="cta-content">
-            <h2>Ready to Transform Your Workflow?</h2>
-            <p>Join thousands of teams already using NexusFlow to streamline their operations and accelerate growth</p>
-            <div class="hero-buttons">
-                <a href="#" class="btn-primary">Start Your Free Trial</a>
-                <a href="#" class="btn-secondary">Schedule a Demo</a>
-            </div>
+    <section class="newsletter">
+        <div class="newsletter-content">
+            <h2>Get Exclusive Deals</h2>
+            <p>Subscribe to our newsletter and be the first to know about new products and special offers</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
+            </form>
         </div>
     </section>
 
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h3>NexusFlow</h3>
-                <p>The modern SaaS platform built for teams that want to scale fast and work smarter.</p>
-                <div class="social-links">
-                    <a href="#">𝕏</a>
-                    <a href="#">in</a>
-                    <a href="#">f</a>
-                    <a href="#">⚡</a>
-                </div>
+                <h3>TechGear Pro</h3>
+                <p>Your trusted source for premium electronics and technology products since 2020.</p>
             </div>
             <div class="footer-section">
-                <h3>Product</h3>
-                <a href="#">Features</a>
-                <a href="#">Pricing</a>
-                <a href="#">Integrations</a>
-                <a href="#">API Docs</a>
-                <a href="#">Changelog</a>
+                <h3>Shop</h3>
+                <a href="#">Laptops</a>
+                <a href="#">Smartphones</a>
+                <a href="#">Audio</a>
+                <a href="#">Accessories</a>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <a href="#">Contact Us</a>
+                <a href="#">FAQ</a>
+                <a href="#">Shipping Info</a>
+                <a href="#">Returns</a>
             </div>
             <div class="footer-section">
                 <h3>Company</h3>
                 <a href="#">About Us</a>
-                <a href="#">Careers</a>
-                <a href="#">Blog</a>
-                <a href="#">Press Kit</a>
-                <a href="#">Contact</a>
-            </div>
-            <div class="footer-section">
-                <h3>Resources</h3>
-                <a href="#">Documentation</a>
-                <a href="#">Help Center</a>
-                <a href="#">Community</a>
-                <a href="#">Status</a>
-                <a href="#">Terms & Privacy</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Track Order</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 NexusFlow. All rights reserved.</p>
+            <p>&copy; 2024 TechGear Pro. All rights reserved.</p>
         </div>
     </footer>
+
+    <div class="chatbot-btn" onclick="alert('Chatbot activated! Connect this to your chatbot platform.')">
+        💬
+    </div>
 
     <script>
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -758,27 +759,16 @@
             });
         });
 
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '0';
-                    entry.target.style.transform = 'translateY(30px)';
-                    setTimeout(() => {
-                        entry.target.style.transition = 'all 0.6s ease-out';
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }, 100);
-                }
+        let cartCount = 0;
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', function() {
+                cartCount++;
+                document.querySelector('.cart-count').textContent = cartCount;
+                this.textContent = 'Added!';
+                setTimeout(() => {
+                    this.textContent = 'Add to Cart';
+                }, 1500);
             });
-        }, observerOptions);
-
-        document.querySelectorAll('.feature-card, .pricing-card, .stat-item').forEach(el => {
-            observer.observe(el);
         });
     </script>
 </body>
